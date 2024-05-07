@@ -3,10 +3,10 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
-import { Badge } from "@/components/ui/badge";
 import { DataTableRowActions } from "./row-actions";
-import { formatCurrency } from "@/lib/utils";
-import { Transaction } from "@prisma/client";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import { Transaction } from "@/dto/types";
+import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<Transaction>[] = [
   {
@@ -50,30 +50,30 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
   },
-  // {
-  //   accessorKey: "label",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Label" />
-  //   ),
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="flex w-[100px] items-center">
-  //         {row.original.labels.map((label) => {
-  //           return (
-  //             <Badge key={label.id} variant="outline">
-  //               {label.title}
-  //             </Badge>
-  //           );
-  //         })}
-  //       </div>
-  //     );
-  //   },
-  //   filterFn: (row, id, value) => {
-  //     return value.includes(row.getValue(id));
-  //   },
-  // },
   {
-    accessorKey: "occurred_at",
+    accessorKey: "labels",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Labels" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex w-[100px] items-center">
+          {row.original.labels.map((label) => {
+            return (
+              <Badge key={label.id} variant="outline">
+                {label.title}
+              </Badge>
+            );
+          })}
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: "occurredAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Data" />
     ),
@@ -81,14 +81,14 @@ export const columns: ColumnDef<Transaction>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {new Date(row.getValue("occurred_at")).toLocaleDateString("pt-BR")}
+            {formatDate(row.getValue("occurredAt"))}
           </span>
         </div>
       );
     },
   },
   {
-    accessorKey: "value_brl",
+    accessorKey: "valueBrl",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Valor" />
     ),
@@ -96,7 +96,7 @@ export const columns: ColumnDef<Transaction>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {formatCurrency(row.getValue("value_brl"))}
+            {formatCurrency(row.getValue("valueBrl"))}
           </span>
         </div>
       );

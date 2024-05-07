@@ -32,9 +32,9 @@ export function DataTableToolbar<TData>({
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
-        {table.getColumn("label") && (
+        {table.getColumn("labels") && (
           <DataTableFacetedFilter
-            column={table.getColumn("label")}
+            column={table.getColumn("labels")}
             title="Label"
             options={labels}
           />

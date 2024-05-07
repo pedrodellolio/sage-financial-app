@@ -1,10 +1,10 @@
 import { Metadata } from "next";
-import { columns } from "./_components/columns";
-import { TransactionsDataTable } from "./_components/data-table";
+import { columns } from "./components/columns";
+import { TransactionsDataTable } from "./components/data-table";
 import { Suspense } from "react";
-import { useOptions } from "@/hooks/use-options";
 import { getTransactions } from "@/app/actions/transactions";
 import { getLabels } from "@/app/actions/labels";
+import AddTransactionDialog from "@/components/dialogs/add-transaction-dialog";
 
 export const metadata: Metadata = {
   title: "Movimentações",
@@ -17,13 +17,13 @@ export default async function Transactions({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const profileTitle = searchParams["p"] as string | undefined;
-  // const [transactions, labels] = await Promise.all([
-  //   getTransactions(profileTitle),
-  //   getLabels(profileTitle),
-  // ]);
-  const transactions = await getTransactions(profileTitle);
-  const labels = await getLabels(profileTitle);
-  console.log(transactions);
+  const isAddTransactionDialogOpen = !!searchParams["t"];
+
+  const [transactions, labels] = await Promise.all([
+    getTransactions(profileTitle),
+    getLabels(profileTitle),
+  ]);
+
   return (
     <div className="w-full">
       <h2 className="text-3xl font-bold tracking-tight mb-4">Movimentações</h2>
@@ -36,6 +36,8 @@ export default async function Transactions({
           })}
         />
       </Suspense>
+
+      <AddTransactionDialog labels={labels} open={isAddTransactionDialogOpen} />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { Profile } from "@/dto/types";
 import NextAuth, { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
@@ -6,8 +7,8 @@ declare module "next-auth" {
    */
   interface Session {
     user: {
-      /** The user's postal address. */
       id: string;
+      selectedProfile?: Profile | null;
     } & DefaultSession["user"];
   }
 }

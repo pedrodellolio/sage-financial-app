@@ -1,13 +1,13 @@
 "use client";
 
 import { formatDate } from "@/lib/utils";
-import { Transaction } from "@/models/transaction";
 import { ApexOptions } from "apexcharts";
 import { GeistSans } from "geist/font/sans";
 import Chart from "react-apexcharts";
+import { Expense } from "../../_actions/charts";
 
 interface Props {
-  data: Transaction[];
+  data: Expense[];
 }
 
 export default function DailyExpenseChart(props: Props) {
@@ -21,7 +21,7 @@ export default function DailyExpenseChart(props: Props) {
       enabled: false,
     },
     xaxis: {
-      categories: props.data.map((t) => formatDate(t.occurred_at)),
+      categories: props.data.map((t) => formatDate(t.occurredAt)),
       axisTicks: { show: false },
       axisBorder: { show: false },
     },
@@ -30,14 +30,14 @@ export default function DailyExpenseChart(props: Props) {
     },
     colors: ["hsl(var(--foreground))"],
     tooltip: {
-      theme: "light",
+      theme: "dark",
     },
   };
 
   const series = [
     {
       name: "Gastos no dia",
-      data: props.data.map((t) => t.value_brl),
+      data: props.data.map((t) => t.valueBrl),
     },
   ];
 

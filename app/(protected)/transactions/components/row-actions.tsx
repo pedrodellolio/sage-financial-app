@@ -9,13 +9,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
-import { Transaction } from "@prisma/client";
+import { Transaction } from "@/dto/types";
+import { deleteTransaction } from "@/app/actions/transactions";
+import { revalidatePath } from "next/cache";
 
 interface DataTableRowActions {
   data: Transaction;
 }
 
 export function DataTableRowActions({ data }: DataTableRowActions) {
+  const handleDeleteRow = async (id: string) => {
+    await deleteTransaction(id);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -31,7 +37,7 @@ export function DataTableRowActions({ data }: DataTableRowActions) {
         {/* <DropdownMenuItem>Editar</DropdownMenuItem> */}
         <DropdownMenuItem
           className="!text-red-500 hover:!bg-red-50"
-          // onClick={() => deleteTransaction(data.id)}
+          onClick={() => handleDeleteRow(data.id)}
         >
           Apagar
         </DropdownMenuItem>

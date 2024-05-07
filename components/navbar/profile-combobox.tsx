@@ -1,8 +1,7 @@
 "use client";
 
 import { Check, ChevronsUpDown } from "lucide-react";
-
-import { cn } from "@/lib/utils";
+import { capitalizeText, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -17,9 +16,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState } from "react";
-import { useOptions } from "@/hooks/use-options";
-import { Profile } from "@prisma/client";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { updateSelectedProfile } from "@/app/actions/user";
+import { Profile } from "@/dto/types";
 
 interface Props {
   handleSelection?: (value: string) => void;
@@ -27,12 +27,20 @@ interface Props {
 }
 
 export function ProfileCombobox(props: Props) {
-  const { profile, setProfile } = useOptions();
-  const [open, setOpen] = useState(false);
+  const { data: session } = useSession();
 
-  if (!profile) {
-    setProfile(props.data[0]);
-  }
+  const [open, setOpen] = useState(false);
+  const [profile, setProfile] = useState<Profile | null | undefined>();
+
+  const handleSelectProfile = async (profile: Profile | undefined) => {
+    setOpen(false);
+    await updateSelectedProfile(session?.user.id, profile?.id);
+    setProfile(profile);
+  };
+
+  useEffect(() => {
+    setProfile(session?.user.selectedProfile);
+  }, [session]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -43,13 +51,13 @@ export function ProfileCombobox(props: Props) {
           aria-expanded={open}
           className="w-[160px] h-9 justify-between"
         >
-          {profile?.title ?? "Selecione..."}
+          {profile ? capitalizeText(profile.title) : "Selecione..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Buscar um perfil ..." />
+          <CommandInput placeholder="Perfil" />
           <CommandList>
             <CommandEmpty>Sem resultados.</CommandEmpty>
             <CommandGroup>
@@ -58,10 +66,10 @@ export function ProfileCombobox(props: Props) {
                   key={data.id}
                   value={data.title}
                   onSelect={(currentValue) => {
-                    setOpen(false);
-                    setProfile(
-                      props.data.find((p) => p.title === currentValue)
+                    const profile = props.data.find(
+                      (p) => p.title === currentValue
                     );
+                    handleSelectProfile(profile);
                   }}
                 >
                   <Check
@@ -70,7 +78,7 @@ export function ProfileCombobox(props: Props) {
                       profile === data ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {data.title}
+                  {capitalizeText(data.title)}
                 </CommandItem>
               ))}
             </CommandGroup>

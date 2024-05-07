@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 
 import GoogleProvider from "next-auth/providers/google";
 import { Adapter } from "next-auth/adapters";
+import { getUser } from "@/app/actions/user";
 const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
@@ -21,9 +22,11 @@ export const authOptions: NextAuthOptions = {
     signIn: "/sign-in",
   },
   callbacks: {
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       // Send properties to the client, like an user id from a provider.
       if (token.sub) session.user.id = token.sub;
+      const userData = await getUser(session.user.id);
+      session.user.selectedProfile = userData?.selectedProfile;
       return session;
     },
   },

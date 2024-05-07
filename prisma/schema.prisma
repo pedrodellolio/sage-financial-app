@@ -8,18 +8,20 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
+  id                String    @id @default(cuid())
+  name              String?
+  email             String    @unique
+  emailVerified     DateTime?
+  image             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  selectedProfileId String?   @unique
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  selectedProfile Profile? @relation(name: "SelectedProfile", fields: [selectedProfileId], references: [id])
 
-  Profile Profile[]
+  accounts Account[]
+  sessions Session[]
+  profiles Profile[]
 }
 
 model Account {
@@ -71,40 +73,31 @@ model Profile {
   user        User          @relation(fields: [userId], references: [id])
   Transaction Transaction[]
   Label       Label[]
+  User        User?         @relation("SelectedProfile")
 }
 
 model Transaction {
-  id        String   @id @default(cuid())
-  profileId String
-  title     String
-  valueBrl  Decimal
-  type      Type
-  createdAt DateTime @default(now())
-  ocurredAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  profileId  String
+  title      String
+  valueBrl   Decimal
+  type       Type
+  createdAt  DateTime @default(now())
+  occurredAt DateTime @default(now())
 
-  profile              Profile                @relation(fields: [profileId], references: [id])
-  LabelsOnTransactions LabelsOnTransactions[]
+  profile Profile @relation(fields: [profileId], references: [id])
+  labels  Label[]
 }
 
 model Label {
-  id                   String                 @id @default(cuid())
-  profileId            String
-  title                String
-  colorHex             String
-  isActive             Boolean
-  createdAt            DateTime               @default(now())
-  profile              Profile                @relation(fields: [profileId], references: [id])
-  LabelsOnTransactions LabelsOnTransactions[]
-}
-
-model LabelsOnTransactions {
-  label         Label       @relation(fields: [labelId], references: [id])
-  labelId       String
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
-  transactionId String
-  createdAt     DateTime    @default(now())
-
-  @@id([labelId, transactionId])
+  id           String        @id @default(cuid())
+  profileId    String
+  title        String
+  colorHex     String
+  isActive     Boolean
+  createdAt    DateTime      @default(now())
+  profile      Profile       @relation(fields: [profileId], references: [id])
+  transactions Transaction[]
 }
 
 enum Type {

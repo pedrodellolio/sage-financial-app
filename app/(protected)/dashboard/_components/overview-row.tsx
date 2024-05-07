@@ -1,16 +1,25 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { calculateSummary } from "../_actions/fetchChartsData";
 import { formatCurrency } from "@/lib/utils";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
+import { Summary, calculateSummary } from "../_actions/charts";
+import { useUserPreferences } from "@/hooks/use-user-preferences";
+import { DateRange } from "react-day-picker";
+import { cookies } from "next/headers";
 
-interface Props {
-  profileTitle: string;
-}
-export async function OverviewRow(props: Props) {
-  const { expenses, income } = await calculateSummary(
-    props.profileTitle,
-    new Date(),
-    new Date()
-  );
+export async function OverviewRow() {
+  const session = await getServerSession(authOptions);
+  const cookieData = cookies().get("dashboard-range")!.value;
+  const dateRange: DateRange = JSON.parse(cookieData);
+
+  let summary: Summary | null = null;
+  if (session?.user.selectedProfile && dateRange) {
+    summary = await calculateSummary(
+      session.user.selectedProfile.id,
+      dateRange.from!,
+      dateRange.to!
+    );
+  }
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -31,7 +40,9 @@ export async function OverviewRow(props: Props) {
           </svg>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatCurrency(income)}</div>
+          <div className="text-2xl font-bold">
+            {formatCurrency(summary ? summary.income : 0)}
+          </div>
           <p className="text-xs text-muted-foreground">
             +20.1% em relação ao mês passado
           </p>
@@ -56,7 +67,9 @@ export async function OverviewRow(props: Props) {
           </svg>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatCurrency(expenses)}</div>
+          <div className="text-2xl font-bold">
+            {formatCurrency(summary ? summary.expenses : 0)}
+          </div>
           <p className="text-xs text-muted-foreground">
             +180.1% em relação ao mês passado
           </p>
@@ -81,7 +94,7 @@ export async function OverviewRow(props: Props) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {formatCurrency(income - expenses)}
+            {formatCurrency(summary ? summary.income - summary.expenses : 0)}
           </div>
           <p className="text-xs text-muted-foreground">+19% from last month</p>
         </CardContent>
