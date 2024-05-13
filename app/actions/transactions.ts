@@ -1,11 +1,11 @@
 "use server";
 
-import { Label, Transaction, Type } from "@/dto/types";
+import { Label, Profile, Transaction, Type } from "@/dto/types";
 import { prisma } from "@/prisma/client";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
+import { getWalletByMonthAndYear, updateOrCreateWallet } from "./wallet";
 
-interface AddTransactionDTO {
-  profileId: string;
+export interface AddTransactionDTO {
   title: string;
   type: Type;
   valueBrl: number;
@@ -17,13 +17,15 @@ export async function getTransactions(
   profileId: string,
   startDate?: Date,
   endDate?: Date
-): Promise<Transaction[]> {
+) {
   noStore;
 
   const transactions = await prisma.transaction.findMany({
     include: { labels: true },
     where: {
-      profile: { id: profileId },
+      wallet: {
+        profileId: profileId,
+      },
       occurredAt: { lte: endDate, gte: startDate },
     },
   });
@@ -33,7 +35,7 @@ export async function getTransactions(
       ...t,
       valueBrl: t.valueBrl.toNumber(),
       type: t.type as Type,
-    };
+    } as Transaction;
   });
 }
 
@@ -44,10 +46,19 @@ export async function deleteTransaction(id?: string) {
   revalidatePath("/app/(protected)/transactions", "page");
 }
 
-export async function createTransaction(transaction: AddTransactionDTO) {
+export async function createTransaction(
+  profileId: string,
+  transaction: AddTransactionDTO
+) {
+  const month = transaction.occurredAt.getMonth();
+  const year = transaction.occurredAt.getFullYear();
+  const currWallet = await getWalletByMonthAndYear(profileId, month, year);
+
+  const wallet = await updateOrCreateWallet(profileId, transaction, currWallet);
+
   await prisma.transaction.create({
     data: {
-      profileId: transaction.profileId,
+      walletId: wallet.id,
       title: transaction.title,
       valueBrl: transaction.valueBrl,
       type: transaction.type,

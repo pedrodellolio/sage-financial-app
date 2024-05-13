@@ -3,6 +3,8 @@ import { DashboardOptionsRow } from "./_components/dashboard-options-row";
 import DailyExpenses from "./_components/daily-expenses";
 import { OverviewRow } from "./_components/overview-row";
 import LabelSummary from "./_components/label-summary";
+import MonthlyExpense from "./_components/monthly-expense";
+import MonthlyBalance from "./_components/monthly-balance";
 
 export default async function Dashboard() {
   return (
@@ -16,7 +18,7 @@ export default async function Dashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Gastos Diários</CardTitle>
+            <CardTitle>Despesas Diárias</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <DailyExpenses />
@@ -25,10 +27,28 @@ export default async function Dashboard() {
 
         <Card className="col-span-2">
           <CardHeader>
-            <CardTitle>Gastos por Categoria</CardTitle>
+            <CardTitle>Despesas por Categoria</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <LabelSummary />
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>Receitas e Despesas Mensais</CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <MonthlyBalance />
+          </CardContent>
+        </Card>
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>Saldo Mensal</CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <MonthlyExpense />
           </CardContent>
         </Card>
       </div>

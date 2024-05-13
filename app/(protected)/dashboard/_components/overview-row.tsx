@@ -3,21 +3,23 @@ import { formatCurrency } from "@/lib/utils";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { Summary, calculateSummary } from "../_actions/charts";
-import { useUserPreferences } from "@/hooks/use-user-preferences";
 import { DateRange } from "react-day-picker";
 import { cookies } from "next/headers";
+import { getUserPreferences } from "@/lib/user-preferences";
 
 export async function OverviewRow() {
   const session = await getServerSession(authOptions);
-  const cookieData = cookies().get("dashboard-range")!.value;
-  const dateRange: DateRange = JSON.parse(cookieData);
+  const profileId = session?.user.selectedProfile?.id;
+  // const { dashboardDateRange } = getUserPreferences();
+  const cookieData = cookies().get("dashboard-range")?.value;
+  const dashboardDateRange: DateRange = cookieData && JSON.parse(cookieData);
 
   let summary: Summary | null = null;
-  if (session?.user.selectedProfile && dateRange) {
+  if (profileId && dashboardDateRange) {
     summary = await calculateSummary(
-      session.user.selectedProfile.id,
-      dateRange.from!,
-      dateRange.to!
+      profileId,
+      dashboardDateRange.from,
+      dashboardDateRange.to
     );
   }
 
@@ -25,7 +27,7 @@ export async function OverviewRow() {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Entradas do mês</CardTitle>
+          <CardTitle className="text-sm font-medium">Receitas do mês</CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -50,7 +52,7 @@ export async function OverviewRow() {
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Saídas do mês</CardTitle>
+          <CardTitle className="text-sm font-medium">Despesas do mês</CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"

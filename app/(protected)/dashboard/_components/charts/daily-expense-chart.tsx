@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 import { ApexOptions } from "apexcharts";
 import { GeistSans } from "geist/font/sans";
 import Chart from "react-apexcharts";
@@ -17,20 +17,40 @@ export default function DailyExpenseChart(props: Props) {
       fontFamily: GeistSans.style.fontFamily,
       toolbar: { show: false },
     },
+    plotOptions: {
+      bar: {
+        borderRadius: 4,
+        borderRadiusApplication: "end",
+      },
+    },
     dataLabels: {
       enabled: false,
     },
     xaxis: {
-      categories: props.data.map((t) => formatDate(t.occurredAt)),
+      categories: props.data.map((t) => t.occurredAt),
       axisTicks: { show: false },
       axisBorder: { show: false },
+      labels: {
+        formatter(value) {
+          return new Date(value).getDate().toString();
+        },
+      },
     },
     grid: {
       borderColor: "hsl(var(--border))",
     },
-    colors: ["hsl(var(--foreground))"],
+    colors: ["hsl(var(--primary))"],
     tooltip: {
-      theme: "dark",
+      followCursor: true,
+      // theme: "dark",
+      x: {
+        show: false,
+      },
+      y: {
+        formatter(val) {
+          return formatCurrency(val);
+        },
+      },
     },
   };
 

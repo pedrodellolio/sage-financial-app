@@ -1,6 +1,11 @@
 "use client";
 
-import { cn, formatDate, formatToBRLCurrency } from "@/lib/utils";
+import {
+  capitalizeText,
+  cn,
+  formatDate,
+  formatToBRLCurrency,
+} from "@/lib/utils";
 import { Button } from "../ui/button";
 import {
   AddTransactionFormData,
@@ -36,6 +41,7 @@ import { Badge } from "../ui/badge";
 import { useState } from "react";
 import { AdornedInput } from "../adorned-input";
 import { useSession } from "next-auth/react";
+import { PopoverClose } from "@radix-ui/react-popover";
 
 interface Props {
   labels: Label[];
@@ -60,7 +66,7 @@ export default function AddTransactionForm(
   async function addTransaction(data: AddTransactionFormData) {
     const profileId = session?.user.selectedProfile?.id;
     if (profileId) {
-      await createTransaction({ ...data, profileId: profileId });
+      await createTransaction(profileId, data);
       router.push(`/transactions`);
     }
   }
@@ -116,6 +122,7 @@ export default function AddTransactionForm(
                 <FormLabel>Título</FormLabel>
                 <FormControl>
                   <AdornedInput
+                    autoComplete="off"
                     adornment={<Text className="h-5 w-5" />}
                     placeholder="Título"
                     {...field}
@@ -220,28 +227,33 @@ export default function AddTransactionForm(
                     </PopoverTrigger>
                     <PopoverContent className="p-0">
                       <Command>
-                        <CommandInput placeholder="Buscar uma label..." />
+                        <CommandInput placeholder="Label" />
                         <CommandList>
                           <CommandEmpty>Sem resultados.</CommandEmpty>
                           <CommandGroup>
                             {props.labels.map((label) => (
-                              <CommandItem
+                              <PopoverClose
                                 key={label.id}
-                                value={label.title}
-                                onSelect={() =>
-                                  form.setValue("labels", [label])
-                                }
+                                className="flex flex-col w-full"
                               >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    field.value?.[0] === label
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                {label.title}
-                              </CommandItem>
+                                <CommandItem
+                                  className="w-full"
+                                  value={label.title}
+                                  onSelect={() =>
+                                    form.setValue("labels", [label])
+                                  }
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      field.value?.[0] === label
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                  {capitalizeText(label.title)}
+                                </CommandItem>
+                              </PopoverClose>
                             ))}
                           </CommandGroup>
                         </CommandList>

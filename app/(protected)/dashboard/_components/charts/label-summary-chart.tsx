@@ -11,7 +11,6 @@ interface Props {
 }
 
 export default function LabelSummaryChart(props: Props) {
-  console.log(props.data);
   const options: ApexOptions = {
     chart: {
       type: "pie",
@@ -20,7 +19,7 @@ export default function LabelSummaryChart(props: Props) {
     },
     labels: props.data.map((t) => capitalizeText(t.label)),
     tooltip: {
-      theme: "dark",
+      // theme: "dark",
     },
     legend: {
       show: false,

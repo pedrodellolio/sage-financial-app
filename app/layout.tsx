@@ -20,7 +20,7 @@ export default function RootLayout({
     <SessionWrapper>
       <html lang="pt-br">
         <UserPreferencesWrapper>
-          <body className={`dark ${inter.className}`}>{children}</body>
+          <body className={`${inter.className}`}>{children}</body>
         </UserPreferencesWrapper>
       </html>
     </SessionWrapper>

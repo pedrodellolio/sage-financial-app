@@ -5,6 +5,9 @@ import { Suspense } from "react";
 import { getTransactions } from "@/app/actions/transactions";
 import { getLabels } from "@/app/actions/labels";
 import AddTransactionDialog from "@/components/dialogs/add-transaction-dialog";
+import { authOptions } from "@/lib/auth-options";
+import { getServerSession } from "next-auth";
+import { Label, Transaction } from "@/dto/types";
 
 export const metadata: Metadata = {
   title: "Movimentações",
@@ -16,13 +19,16 @@ export default async function Transactions({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const profileTitle = searchParams["p"] as string | undefined;
+  const session = await getServerSession(authOptions);
+  const profileId = session?.user.selectedProfile?.id;
   const isAddTransactionDialogOpen = !!searchParams["t"];
 
-  const [transactions, labels] = await Promise.all([
-    getTransactions(profileTitle),
-    getLabels(profileTitle),
-  ]);
+  let transactions: Transaction[] = [];
+  let labels: Label[] = [];
+  if (profileId) {
+    transactions = await getTransactions(profileId);
+    labels = await getLabels(profileId);
+  }
 
   return (
     <div className="w-full">

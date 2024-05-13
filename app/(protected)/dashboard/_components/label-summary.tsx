@@ -7,6 +7,7 @@ import {
   getLabelSummary,
   LabelSummary as LabelSummaryDTO,
 } from "../_actions/charts";
+import { getUserPreferences } from "@/lib/user-preferences";
 
 const LabelSummaryChart = dynamic(
   () =>
@@ -19,15 +20,16 @@ const LabelSummaryChart = dynamic(
 export default async function LabelSummary() {
   const session = await getServerSession(authOptions);
   const profileId = session?.user.selectedProfile?.id;
-  const cookieData = cookies().get("dashboard-range")!.value;
-  const dateRange: DateRange = JSON.parse(cookieData);
-
+  // const { dashboardDateRange } = getUserPreferences();
+  const cookieData = cookies().get("dashboard-range")?.value;
+  const dashboardDateRange: DateRange = cookieData && JSON.parse(cookieData);
+  
   let chartData: LabelSummaryDTO[] = [];
-  if (profileId && dateRange) {
+  if (profileId && dashboardDateRange) {
     chartData = await getLabelSummary(
       profileId,
-      dateRange.from!,
-      dateRange.to!
+      dashboardDateRange.from,
+      dashboardDateRange.to
     );
   }
 

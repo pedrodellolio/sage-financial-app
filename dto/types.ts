@@ -7,9 +7,19 @@ export interface Profile {
   selectedProfile?: Profile;
 }
 
-export interface Transaction {
+export interface Wallet {
   id: string;
   profileId: string;
+  month: number;
+  year: number;
+  expensesBrl: number;
+  incomeBrl: number;
+  // balanceBrl: number;
+}
+
+export interface Transaction {
+  id: string;
+  walletId: string;
   title: string;
   valueBrl: number;
   type: Type;

@@ -70,23 +70,35 @@ model Profile {
   isActive  Boolean
   createdAt DateTime @default(now())
 
-  user        User          @relation(fields: [userId], references: [id])
+  user   User     @relation(fields: [userId], references: [id])
+  Label  Label[]
+  User   User?    @relation("SelectedProfile")
+  Wallet Wallet[]
+}
+
+model Wallet {
+  id          String  @id @default(cuid())
+  profileId   String
+  month       Int
+  year        Int
+  expensesBrl Decimal
+  incomeBrl   Decimal
+
+  profile     Profile       @relation(fields: [profileId], references: [id])
   Transaction Transaction[]
-  Label       Label[]
-  User        User?         @relation("SelectedProfile")
 }
 
 model Transaction {
   id         String   @id @default(cuid())
-  profileId  String
+  walletId   String
   title      String
   valueBrl   Decimal
   type       Type
   createdAt  DateTime @default(now())
   occurredAt DateTime @default(now())
 
-  profile Profile @relation(fields: [profileId], references: [id])
-  labels  Label[]
+  wallet Wallet  @relation(fields: [walletId], references: [id])
+  labels Label[]
 }
 
 model Label {

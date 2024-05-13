@@ -20,7 +20,7 @@ export default async function Header() {
     <div className="w-full">
       <nav className="border-b border-b-foreground/8 h-16">
         <div className="flex items-center gap-10 px-14 text-sm h-full">
-          <p className="font-bold text-lg">Sage</p>
+          <p className="font-bold text-lg text-primary">Sage</p>
           {session && (
             <div className="w-full flex flex-row gap-8 items-center justify-between">
               <NavbarLinks />

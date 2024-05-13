@@ -20,6 +20,8 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { updateSelectedProfile } from "@/app/actions/user";
 import { Profile } from "@/dto/types";
+import { revalidatePath } from "next/cache";
+import { useRouter } from "next/navigation";
 
 interface Props {
   handleSelection?: (value: string) => void;
@@ -27,6 +29,7 @@ interface Props {
 }
 
 export function ProfileCombobox(props: Props) {
+  const router = useRouter();
   const { data: session } = useSession();
 
   const [open, setOpen] = useState(false);
@@ -36,6 +39,7 @@ export function ProfileCombobox(props: Props) {
     setOpen(false);
     await updateSelectedProfile(session?.user.id, profile?.id);
     setProfile(profile);
+    router.refresh();
   };
 
   useEffect(() => {

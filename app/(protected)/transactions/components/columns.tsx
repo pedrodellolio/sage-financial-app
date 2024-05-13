@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./row-actions";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { Transaction } from "@/dto/types";
+import { Transaction, Type } from "@/dto/types";
 import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<Transaction>[] = [
@@ -95,7 +95,8 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex space-x-2">
-          <span className="max-w-[500px] truncate font-medium">
+          <span className={`max-w-[500px] truncate font-medium`}>
+            {row.original.type === Type.EXPENSE && "-"}
             {formatCurrency(row.getValue("valueBrl"))}
           </span>
         </div>

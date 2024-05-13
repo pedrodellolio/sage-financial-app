@@ -1,7 +1,8 @@
 "use server";
 
 import { getTransactions } from "@/app/actions/transactions";
-import { Type } from "@/dto/types";
+import { Type, Wallet } from "@/dto/types";
+import { prisma } from "@/prisma/client";
 
 export interface Expense {
   occurredAt: Date;
@@ -20,8 +21,8 @@ export interface LabelSummary {
 
 export async function calculateSummary(
   profileId: string,
-  startDate: Date,
-  endDate: Date
+  startDate?: Date,
+  endDate?: Date
 ) {
   try {
     const transactions = await getTransactions(profileId, startDate, endDate);
@@ -66,8 +67,8 @@ export async function getDailyExpenses(
 
 export async function getLabelSummary(
   profileId: string,
-  startDate: Date,
-  endDate: Date
+  startDate?: Date,
+  endDate?: Date
 ): Promise<LabelSummary[]> {
   const transactions = await getTransactions(profileId, startDate, endDate);
   const labelMap = new Map<string, number>();
@@ -91,4 +92,23 @@ export async function getLabelSummary(
   });
 
   return labelsWithTransactions;
+}
+
+export async function getMonthlyTrend(profileId: string): Promise<Wallet[]> {
+  const currentYear = new Date().getFullYear();
+  const wallet = await prisma.wallet.findMany({
+    where: {
+      profile: { id: profileId },
+      year: currentYear,
+      month: { lte: 12, gte: 1 },
+    },
+  });
+
+  return wallet.map((w) => {
+    return {
+      ...w,
+      expensesBrl: w.expensesBrl.toNumber(),
+      incomeBrl: w.incomeBrl.toNumber(),
+    };
+  });
 }
