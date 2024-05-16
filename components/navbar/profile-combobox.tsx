@@ -18,33 +18,43 @@ import {
 } from "@/components/ui/popover";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { updateSelectedProfile } from "@/app/actions/user";
 import { Profile } from "@/dto/types";
-import { revalidatePath } from "next/cache";
-import { useRouter } from "next/navigation";
+import axios from "axios";
+import { useSearchParams } from "next/navigation";
 
 interface Props {
-  handleSelection?: (value: string) => void;
-  data: Profile[];
+  handleSelection?: (profile: Profile) => Promise<void>;
 }
 
 export function ProfileCombobox(props: Props) {
-  const router = useRouter();
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
 
+  const [data, setData] = useState<Profile[]>([]);
   const [open, setOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null | undefined>();
 
-  const handleSelectProfile = async (profile: Profile | undefined) => {
-    setOpen(false);
-    await updateSelectedProfile(session?.user.id, profile?.id);
-    setProfile(profile);
-    router.refresh();
-  };
+  useEffect(() => {
+    const loadData = async () => {
+      const response = await axios.get("/api/getUserProfiles");
+      const profiles: Profile[] = response.data;
+      setData(profiles);
+    };
+
+    loadData();
+  }, []);
 
   useEffect(() => {
-    setProfile(session?.user.selectedProfile);
-  }, [session]);
+    const profile = data.find((d) => d.id === searchParams.get("profile"));
+    if (profile) setProfile(profile);
+    else setProfile(session?.user.selectedProfile);
+  }, [data, session]);
+
+  const handleSelectProfile = async (profile: Profile | undefined) => {
+    setOpen(false);
+    props.handleSelection && profile && (await props.handleSelection(profile));
+    setProfile(profile);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -65,24 +75,22 @@ export function ProfileCombobox(props: Props) {
           <CommandList>
             <CommandEmpty>Sem resultados.</CommandEmpty>
             <CommandGroup>
-              {props.data.map((data) => (
+              {data.map((d) => (
                 <CommandItem
-                  key={data.id}
-                  value={data.title}
+                  key={d.id}
+                  value={d.title}
                   onSelect={(currentValue) => {
-                    const profile = props.data.find(
-                      (p) => p.title === currentValue
-                    );
+                    const profile = data.find((p) => p.title === currentValue);
                     handleSelectProfile(profile);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      profile === data ? "opacity-100" : "opacity-0"
+                      profile === d ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {capitalizeText(data.title)}
+                  {capitalizeText(d.title)}
                 </CommandItem>
               ))}
             </CommandGroup>

@@ -1,6 +1,6 @@
 "use server";
 
-import { Label, Profile, Transaction, TransactionType } from "@/dto/types";
+import { Label, Transaction, TransactionType } from "@/dto/types";
 import { prisma } from "@/prisma/client";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { getWalletByMonthAndYear, updateOrCreateWallet } from "./wallet";
@@ -68,5 +68,4 @@ export async function createTransaction(
       },
     },
   });
-  revalidatePath("/app/(protected)/transactions", "page");
 }

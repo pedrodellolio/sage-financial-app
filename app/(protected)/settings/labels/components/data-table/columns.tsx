@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Label } from "@/dto/types";
 import { DataTableRowActions } from "./row-actions";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
+import { capitalizeText } from "@/lib/utils";
 
 export const columns: ColumnDef<Label>[] = [
   {
@@ -15,7 +16,7 @@ export const columns: ColumnDef<Label>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {row.getValue("title")}
+            {capitalizeText(row.getValue("title"))}
           </span>
         </div>
       );
@@ -30,7 +31,7 @@ export const columns: ColumnDef<Label>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {row.getValue("colorHex")}
+            {row.getValue<string>("colorHex").toUpperCase()}
           </span>
         </div>
       );

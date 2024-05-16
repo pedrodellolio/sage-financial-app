@@ -11,7 +11,6 @@ interface Props {
 }
 
 export default function MonthlyExpenseChart(props: Props) {
-  console.log(props.data);
   const options: ApexOptions = {
     chart: {
       fontFamily: GeistSans.style.fontFamily,

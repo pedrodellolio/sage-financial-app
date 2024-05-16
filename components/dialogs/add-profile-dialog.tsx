@@ -8,33 +8,35 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle,
 } from "@/components/ui/drawer";
-import AddTransactionForm from "../forms/add-transaction-form";
-import { useRouter } from "next/navigation";
-import { Label } from "@/dto/types";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import AddProfileForm from "../forms/add-profile-form";
 
 interface Props {
   open: boolean;
-  labels: Label[];
 }
 
-export default function AddTransactionDialog(props: Props) {
+export default function AddProfileDialog(props: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const handleOpenChange = (isOpen: boolean) => {
-    if (!isOpen)
-      router.push(`/transactions`);
+    if (!isOpen) {
+      const current = new URLSearchParams(Array.from(searchParams.entries()));
+      current.delete("p");
+      const search = current.toString();
+      const query = search ? `?${search}` : "";
+      router.push(`${pathname}${query}`);
+    }
   };
 
   if (isDesktop) {
@@ -42,12 +44,12 @@ export default function AddTransactionDialog(props: Props) {
       <Dialog open={props.open} onOpenChange={handleOpenChange}>
         <DialogContent className="sm:max-w-[460px]">
           <DialogHeader>
-            <DialogTitle>Adicionar transação</DialogTitle>
+            <DialogTitle>Adicionar perfil</DialogTitle>
             <DialogDescription>
-              Registre uma transação bancária.
+              Crie um perfil de movimentações.
             </DialogDescription>
           </DialogHeader>
-          <AddTransactionForm labels={props.labels} />
+          <AddProfileForm />
         </DialogContent>
       </Dialog>
     );
@@ -57,10 +59,10 @@ export default function AddTransactionDialog(props: Props) {
     <Drawer open={props.open}>
       <DrawerContent>
         <DrawerHeader className="text-left">
-          <DrawerTitle>Adicionar transação</DrawerTitle>
-          <DrawerDescription>
-            Registre uma transação bancária.
-          </DrawerDescription>
+          <DialogTitle>Adicionar perfil</DialogTitle>
+          <DialogDescription>
+            Crie um perfil de movimentações.
+          </DialogDescription>
         </DrawerHeader>
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>

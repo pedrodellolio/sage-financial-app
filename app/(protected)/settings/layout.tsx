@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import Image from "next/image";
 
 import { Separator } from "@/components/ui/separator";
 import { SidebarNav } from "./_components/sidebar-nav";
@@ -21,10 +20,6 @@ const sidebarNavItems = [
   {
     title: "Categorias",
     href: "/settings/labels",
-  },
-  {
-    title: "Notificações",
-    href: "/settings/notifications",
   },
 ];
 

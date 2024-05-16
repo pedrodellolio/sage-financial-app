@@ -12,14 +12,18 @@ import { MoreHorizontal } from "lucide-react";
 import { Transaction } from "@/dto/types";
 import { deleteTransaction } from "@/app/actions/transactions";
 import { revalidatePath } from "next/cache";
+import { useRouter } from "next/navigation";
 
 interface DataTableRowActions {
   data: Transaction;
 }
 
 export function DataTableRowActions({ data }: DataTableRowActions) {
+  const router = useRouter();
+
   const handleDeleteRow = async (id: string) => {
     await deleteTransaction(id);
+    router.refresh();
   };
 
   return (

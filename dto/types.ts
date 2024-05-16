@@ -38,8 +38,8 @@ export interface Label {
 }
 
 export enum TransactionType {
-  EXPENSE,
-  INCOME,
+  EXPENSE = "EXPENSE",
+  INCOME = "INCOME",
 }
 
 export enum ChartType {}

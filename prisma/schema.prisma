@@ -66,7 +66,7 @@ model VerificationToken {
 model Profile {
   id        String   @id @default(cuid())
   userId    String
-  title     String
+  title     String   @unique
   isActive  Boolean
   createdAt DateTime @default(now())
 
@@ -105,7 +105,7 @@ model Transaction {
 model Label {
   id           String        @id @default(cuid())
   profileId    String
-  title        String
+  title        String        @unique
   colorHex     String
   isActive     Boolean
   createdAt    DateTime      @default(now())

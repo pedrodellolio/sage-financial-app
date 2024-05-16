@@ -1,21 +1,26 @@
 import { Separator } from "@/components/ui/separator";
 import { Metadata } from "next";
-import { AccountForm } from "./components/profiles-form";
 import { ProfilesDataTable } from "./components/data-table/data-table";
 import { columns } from "./components/data-table/columns";
 import { getServerSession } from "next-auth";
 import { Profile } from "@/dto/types";
 import { getProfiles } from "@/app/actions/profile";
 import { authOptions } from "@/lib/auth-options";
+import AddProfileDialog from "@/components/dialogs/add-profile-dialog";
 
 export const metadata: Metadata = {
   title: "Preferências: Perfis",
   description: "",
 };
 
-export default async function Profiles() {
+export default async function Profiles({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const session = await getServerSession(authOptions);
   const userId = session?.user.id;
+  const isAddProfileDialogOpen = !!searchParams["p"];
 
   let profiles: Profile[] = [];
   if (userId) {
@@ -32,6 +37,7 @@ export default async function Profiles() {
       </div>
       <Separator />
       <ProfilesDataTable data={profiles} columns={columns} />
+      <AddProfileDialog open={isAddProfileDialogOpen} />
     </div>
   );
 }

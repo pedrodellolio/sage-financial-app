@@ -1,21 +1,21 @@
+"use client";
+
 import { ProfileCombobox } from "./navbar/profile-combobox";
 import NavbarLinks from "./navbar/navbar-links";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { UserDropdown } from "./navbar/user-dropdown";
-import { prisma } from "@/prisma/client";
+import { updateSelectedProfile } from "@/app/actions/user";
+import { Profile } from "@/dto/types";
+import { useSession } from "next-auth/react";
 
-async function getProfiles(id?: string) {
-  return await prisma.profile.findMany({
-    where: {
-      userId: id,
-    },
-  });
-}
+export default function Header() {
+  const { data: session } = useSession();
 
-export default async function Header() {
-  const session = await getServerSession(authOptions);
-  const profiles = await getProfiles(session?.user.id);
+  const handleSelectProfile = async (profile: Profile | undefined) => {
+    await updateSelectedProfile(session?.user.id, profile?.id);
+  };
+
   return (
     <div className="w-full">
       <nav className="border-b border-b-foreground/8 h-16">
@@ -25,7 +25,7 @@ export default async function Header() {
             <div className="w-full flex flex-row gap-8 items-center justify-between">
               <NavbarLinks />
               <div className="flex flex-row items-center gap-4">
-                <ProfileCombobox data={profiles} />
+                <ProfileCombobox handleSelection={handleSelectProfile} />
                 <UserDropdown />
               </div>
             </div>

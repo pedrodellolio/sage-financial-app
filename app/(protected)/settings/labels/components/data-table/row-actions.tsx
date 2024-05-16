@@ -8,14 +8,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { Label } from "@/dto/types";
+import { deleteLabel } from "@/app/actions/labels";
+import { useRouter } from "next/navigation";
 
 interface DataTableRowActions {
   data: Label;
 }
 
 export function DataTableRowActions({ data }: DataTableRowActions) {
+  const router = useRouter();
+
   const handleDeleteRow = async (id: string) => {
-    // await deleteProfile(id);
+    await deleteLabel(id);
+    router.refresh();
   };
 
   return (

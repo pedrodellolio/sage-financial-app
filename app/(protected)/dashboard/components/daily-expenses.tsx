@@ -2,7 +2,6 @@ import { authOptions } from "@/lib/auth-options";
 import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
 import { Expense, getDailyExpenses } from "../actions/charts";
-import { getUserPreferences } from "@/lib/user-preferences";
 import { cookies } from "next/headers";
 import { DateRange } from "react-day-picker";
 
