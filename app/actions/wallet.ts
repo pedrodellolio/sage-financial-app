@@ -1,4 +1,4 @@
-import { Profile, Transaction, Type, Wallet } from "@/dto/types";
+import { Profile, Transaction, TransactionType, Wallet } from "@/dto/types";
 import { prisma } from "@/prisma/client";
 import { AddTransactionDTO } from "./transactions";
 import { Prisma } from "@prisma/client";
@@ -31,7 +31,7 @@ export async function updateOrCreateWallet(
   w: Wallet | null
 ) {
   const { valueBrl, occurredAt } = t;
-  const isExpense = t.type === Type.EXPENSE;
+  const isExpense = t.type === TransactionType.EXPENSE;
 
   let expenses = isExpense ? valueBrl : 0;
   let income = !isExpense ? valueBrl : 0;

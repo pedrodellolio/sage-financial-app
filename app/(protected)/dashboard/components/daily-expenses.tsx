@@ -1,7 +1,7 @@
 import { authOptions } from "@/lib/auth-options";
 import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
-import { Expense, getDailyExpenses } from "../_actions/charts";
+import { Expense, getDailyExpenses } from "../actions/charts";
 import { getUserPreferences } from "@/lib/user-preferences";
 import { cookies } from "next/headers";
 import { DateRange } from "react-day-picker";
@@ -9,7 +9,7 @@ import { DateRange } from "react-day-picker";
 const DailyExpenseChart = dynamic(
   () =>
     import(
-      "@/app/(protected)/dashboard/_components/charts/daily-expense-chart"
+      "@/app/(protected)/dashboard/components/charts/daily-expense-chart"
     ),
   { ssr: false }
 );

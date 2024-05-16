@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import { columns } from "./components/columns";
-import { TransactionsDataTable } from "./components/data-table";
+import { columns } from "./components/data-table/columns";
+import { TransactionsDataTable } from "./components/data-table/data-table";
 import { Suspense } from "react";
 import { getTransactions } from "@/app/actions/transactions";
 import { getLabels } from "@/app/actions/labels";

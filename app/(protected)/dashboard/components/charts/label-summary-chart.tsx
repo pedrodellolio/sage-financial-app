@@ -4,7 +4,7 @@ import { capitalizeText, formatDate } from "@/lib/utils";
 import { ApexOptions } from "apexcharts";
 import { GeistSans } from "geist/font/sans";
 import Chart from "react-apexcharts";
-import { LabelSummary } from "../../_actions/charts";
+import { LabelSummary } from "../../actions/charts";
 
 interface Props {
   data: LabelSummary[];

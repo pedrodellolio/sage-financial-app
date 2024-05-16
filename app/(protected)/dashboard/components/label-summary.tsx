@@ -6,13 +6,12 @@ import { DateRange } from "react-day-picker";
 import {
   getLabelSummary,
   LabelSummary as LabelSummaryDTO,
-} from "../_actions/charts";
-import { getUserPreferences } from "@/lib/user-preferences";
+} from "../actions/charts";
 
 const LabelSummaryChart = dynamic(
   () =>
     import(
-      "@/app/(protected)/dashboard/_components/charts/label-summary-chart"
+      "@/app/(protected)/dashboard/components/charts/label-summary-chart"
     ),
   { ssr: false }
 );
@@ -20,7 +19,6 @@ const LabelSummaryChart = dynamic(
 export default async function LabelSummary() {
   const session = await getServerSession(authOptions);
   const profileId = session?.user.selectedProfile?.id;
-  // const { dashboardDateRange } = getUserPreferences();
   const cookieData = cookies().get("dashboard-range")?.value;
   const dashboardDateRange: DateRange = cookieData && JSON.parse(cookieData);
   

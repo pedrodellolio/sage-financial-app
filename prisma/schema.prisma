@@ -74,6 +74,7 @@ model Profile {
   Label  Label[]
   User   User?    @relation("SelectedProfile")
   Wallet Wallet[]
+  Chart  Chart[]
 }
 
 model Wallet {
@@ -89,13 +90,13 @@ model Wallet {
 }
 
 model Transaction {
-  id         String   @id @default(cuid())
+  id         String          @id @default(cuid())
   walletId   String
   title      String
   valueBrl   Decimal
-  type       Type
-  createdAt  DateTime @default(now())
-  occurredAt DateTime @default(now())
+  type       TransactionType
+  createdAt  DateTime        @default(now())
+  occurredAt DateTime        @default(now())
 
   wallet Wallet  @relation(fields: [walletId], references: [id])
   labels Label[]
@@ -112,7 +113,44 @@ model Label {
   transactions Transaction[]
 }
 
-enum Type {
+model Chart {
+  id            String @id @default(cuid())
+  profileId     String
+  chartTypeId   String
+  xAxisOptionId String
+  yAxisOptionId String
+
+  type    ChartType    @relation(fields: [chartTypeId], references: [id])
+  xAxis   XAxisOptions @relation(fields: [xAxisOptionId], references: [id])
+  yAxis   YAxisOptions @relation(fields: [yAxisOptionId], references: [id])
+  profile Profile      @relation(fields: [profileId], references: [id])
+}
+
+model XAxisOptions {
+  id       String  @id @default(cuid())
+  title    String
+  isActive Boolean
+
+  Chart Chart[]
+}
+
+model YAxisOptions {
+  id       String  @id @default(cuid())
+  title    String
+  isActive Boolean
+
+  Chart Chart[]
+}
+
+model ChartType {
+  id       String  @id @default(cuid())
+  title    String
+  isActive Boolean
+
+  Chart Chart[]
+}
+
+enum TransactionType {
   EXPENSE
   INCOME
 }

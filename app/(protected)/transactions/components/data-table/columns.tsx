@@ -2,11 +2,11 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTableColumnHeader } from "./data-table-column-header";
-import { DataTableRowActions } from "./row-actions";
+import { DataTableColumnHeader } from "../../../../../components/data-table/data-table-column-header";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { Transaction, Type } from "@/dto/types";
+import { Transaction, TransactionType } from "@/dto/types";
 import { Badge } from "@/components/ui/badge";
+import { DataTableRowActions } from "./row-actions";
 
 export const columns: ColumnDef<Transaction>[] = [
   {
@@ -96,7 +96,7 @@ export const columns: ColumnDef<Transaction>[] = [
       return (
         <div className="flex space-x-2">
           <span className={`max-w-[500px] truncate font-medium`}>
-            {row.original.type === Type.EXPENSE && "-"}
+            {row.original.type === TransactionType.EXPENSE && "-"}
             {formatCurrency(row.getValue("valueBrl"))}
           </span>
         </div>

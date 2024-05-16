@@ -4,7 +4,7 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import { ApexOptions } from "apexcharts";
 import { GeistSans } from "geist/font/sans";
 import Chart from "react-apexcharts";
-import { Expense } from "../../_actions/charts";
+import { Expense } from "../../actions/charts";
 
 interface Props {
   data: Expense[];

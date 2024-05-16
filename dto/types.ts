@@ -22,15 +22,10 @@ export interface Transaction {
   walletId: string;
   title: string;
   valueBrl: number;
-  type: Type;
+  type: TransactionType;
   createdAt: Date;
   occurredAt: Date;
   labels: Label[];
-}
-
-export enum Type {
-  EXPENSE = "EXPENSE",
-  INCOME = "INCOME",
 }
 
 export interface Label {
@@ -41,3 +36,10 @@ export interface Label {
   isActive: boolean;
   createdAt: Date;
 }
+
+export enum TransactionType {
+  EXPENSE,
+  INCOME,
+}
+
+export enum ChartType {}

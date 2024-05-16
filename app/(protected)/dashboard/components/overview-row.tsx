@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
-import { Summary, calculateSummary } from "../_actions/charts";
+import { Summary, calculateSummary } from "../actions/charts";
 import { DateRange } from "react-day-picker";
 import { cookies } from "next/headers";
 import { getUserPreferences } from "@/lib/user-preferences";
@@ -27,7 +27,7 @@ export async function OverviewRow() {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Receitas do mês</CardTitle>
+          <CardTitle className="text-sm font-medium">Receitas do período</CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -46,13 +46,13 @@ export async function OverviewRow() {
             {formatCurrency(summary ? summary.income : 0)}
           </div>
           <p className="text-xs text-muted-foreground">
-            +20.1% em relação ao mês passado
+            +20.1% em relação ao período passado
           </p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Despesas do mês</CardTitle>
+          <CardTitle className="text-sm font-medium">Despesas do período</CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -73,13 +73,13 @@ export async function OverviewRow() {
             {formatCurrency(summary ? summary.expenses : 0)}
           </div>
           <p className="text-xs text-muted-foreground">
-            +180.1% em relação ao mês passado
+            +180.1% em relação ao período passado
           </p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Saldo do mês</CardTitle>
+          <CardTitle className="text-sm font-medium">Saldo do período</CardTitle>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -98,7 +98,7 @@ export async function OverviewRow() {
           <div className="text-2xl font-bold">
             {formatCurrency(summary ? summary.income - summary.expenses : 0)}
           </div>
-          <p className="text-xs text-muted-foreground">+19% from last month</p>
+          <p className="text-xs text-muted-foreground">+19% em relação ao período passado</p>
         </CardContent>
       </Card>
     </div>

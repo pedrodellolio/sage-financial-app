@@ -1,7 +1,7 @@
 "use server";
 
 import { getTransactions } from "@/app/actions/transactions";
-import { Type, Wallet } from "@/dto/types";
+import { TransactionType, Wallet } from "@/dto/types";
 import { prisma } from "@/prisma/client";
 
 export interface Expense {
@@ -27,10 +27,10 @@ export async function calculateSummary(
   try {
     const transactions = await getTransactions(profileId, startDate, endDate);
     const totalExpenses = transactions
-      ?.filter((t) => t.type === Type.EXPENSE)
+      ?.filter((t) => t.type === TransactionType.EXPENSE)
       .reduce((acc, cur) => acc + cur.valueBrl, 0);
     const totalIncome = transactions
-      ?.filter((t) => t.type === Type.INCOME)
+      ?.filter((t) => t.type === TransactionType.INCOME)
       .reduce((acc, cur) => acc + cur.valueBrl, 0);
 
     return { income: totalIncome ?? 0, expenses: totalExpenses ?? 0 };

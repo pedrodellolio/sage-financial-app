@@ -1,4 +1,4 @@
-import { Label, Type } from "@/dto/types";
+import { Label, TransactionType } from "@/dto/types";
 import { z } from "zod";
 
 export const addTransactionSchema = z.object({
@@ -22,7 +22,7 @@ export const addTransactionSchema = z.object({
   occurredAt: z.date({
     required_error: "A date of birth is required.",
   }),
-  type: z.nativeEnum(Type).default(Type.EXPENSE),
+  type: z.nativeEnum(TransactionType).default(TransactionType.EXPENSE),
 });
 
 export type AddTransactionFormData = z.infer<typeof addTransactionSchema>;

@@ -12,9 +12,12 @@ import {
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export function UserDropdown() {
   const { data: session } = useSession();
+  const router = useRouter();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -44,7 +47,7 @@ export function UserDropdown() {
             Perfi
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem> */}
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/settings/account")}>
             Preferências
             {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
           </DropdownMenuItem>

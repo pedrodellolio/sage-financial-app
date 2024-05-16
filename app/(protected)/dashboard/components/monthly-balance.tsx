@@ -1,13 +1,13 @@
 import { authOptions } from "@/lib/auth-options";
 import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
-import { getMonthlyTrend } from "../_actions/charts";
+import { getMonthlyTrend } from "../actions/charts";
 import { Wallet } from "@/dto/types";
 
 const MonthlyBalanceChart = dynamic(
   () =>
     import(
-      "@/app/(protected)/dashboard/_components/charts/monthly-balance-chart"
+      "@/app/(protected)/dashboard/components/charts/monthly-balance-chart"
     ),
   { ssr: false }
 );

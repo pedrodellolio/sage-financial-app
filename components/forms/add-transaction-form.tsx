@@ -21,7 +21,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { useForm } from "react-hook-form";
-import { Label, Type } from "@/dto/types";
+import { Label, TransactionType } from "@/dto/types";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { CalendarIcon, Check, ChevronsUpDown, Text } from "lucide-react";
@@ -53,13 +53,13 @@ export default function AddTransactionForm(
   const { data: session } = useSession();
   const router = useRouter();
 
-  const [selectedTab, setSelectedTab] = useState<Type>(Type.EXPENSE);
+  const [selectedTab, setSelectedTab] = useState<TransactionType>(TransactionType.EXPENSE);
 
   const form = useForm<AddTransactionFormData>({
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
       title: "",
-      type: Type.EXPENSE,
+      type: TransactionType.EXPENSE,
     },
   });
 
@@ -72,7 +72,7 @@ export default function AddTransactionForm(
   }
 
   const onTabChange = (value: string) => {
-    const newTab = value === "EXPENSE" ? Type.EXPENSE : Type.INCOME;
+    const newTab = value === "EXPENSE" ? TransactionType.EXPENSE : TransactionType.INCOME;
     setSelectedTab(newTab);
     form.setValue("type", newTab);
   };
@@ -81,8 +81,8 @@ export default function AddTransactionForm(
     <>
       <Tabs value={selectedTab} onValueChange={onTabChange}>
         <TabsList className="grid w-full grid-cols-2 mt-4">
-          <TabsTrigger value={Type.EXPENSE}>Saída</TabsTrigger>
-          <TabsTrigger value={Type.INCOME}>Entrada</TabsTrigger>
+          <TabsTrigger value={TransactionType.EXPENSE}>Saída</TabsTrigger>
+          <TabsTrigger value={TransactionType.INCOME}>Entrada</TabsTrigger>
         </TabsList>
       </Tabs>
       <Form {...form}>

@@ -9,7 +9,7 @@ export default function ProtectedLayout({
   return (
     <div>
       <Header />
-      <main className="min-h-screen flex flex-col items-center py-10 px-14">
+      <main className="min-h-screen flex flex-col py-10 px-14">
         {children}
       </main>
       <Footer />

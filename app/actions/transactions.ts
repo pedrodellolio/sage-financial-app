@@ -1,13 +1,13 @@
 "use server";
 
-import { Label, Profile, Transaction, Type } from "@/dto/types";
+import { Label, Profile, Transaction, TransactionType } from "@/dto/types";
 import { prisma } from "@/prisma/client";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { getWalletByMonthAndYear, updateOrCreateWallet } from "./wallet";
 
 export interface AddTransactionDTO {
   title: string;
-  type: Type;
+  type: TransactionType;
   valueBrl: number;
   occurredAt: Date;
   labels: Label[];
@@ -34,7 +34,7 @@ export async function getTransactions(
     return {
       ...t,
       valueBrl: t.valueBrl.toNumber(),
-      type: t.type as Type,
+      type: t.type as TransactionType,
     } as Transaction;
   });
 }

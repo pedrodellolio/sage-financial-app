@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Type" AS ENUM ('EXPENSE', 'INCOME');
+CREATE TYPE "TransactionType" AS ENUM ('EXPENSE', 'INCOME');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -68,7 +68,7 @@ CREATE TABLE "Transaction" (
     "profileId" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "valueBrl" DECIMAL(65,30) NOT NULL,
-    "type" "Type" NOT NULL,
+    "type" "TransactionType" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "ocurredAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
