@@ -75,6 +75,7 @@ model Profile {
   User   User?    @relation("SelectedProfile")
   Wallet Wallet[]
   Chart  Chart[]
+  File   File[]
 }
 
 model Wallet {
@@ -92,6 +93,7 @@ model Wallet {
 model Transaction {
   id         String          @id @default(cuid())
   walletId   String
+  fileId     String?
   title      String
   valueBrl   Decimal
   type       TransactionType
@@ -99,6 +101,7 @@ model Transaction {
   occurredAt DateTime        @default(now())
 
   wallet Wallet  @relation(fields: [walletId], references: [id])
+  file   File?   @relation(fields: [fileId], references: [id])
   labels Label[]
 }
 
@@ -111,6 +114,16 @@ model Label {
   createdAt    DateTime      @default(now())
   profile      Profile       @relation(fields: [profileId], references: [id])
   transactions Transaction[]
+}
+
+model File {
+  id         String   @id @default(cuid())
+  profileId  String
+  name       String
+  uploadedAt DateTime @default(now())
+
+  profile     Profile       @relation(fields: [profileId], references: [id])
+  Transaction Transaction[]
 }
 
 model Chart {

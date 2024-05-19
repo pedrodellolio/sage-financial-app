@@ -1,3 +1,5 @@
+import { AddTransactionDTO } from "@/app/actions/transactions";
+
 export interface Profile {
   id: string;
   userId: string;
@@ -43,3 +45,21 @@ export enum TransactionType {
 }
 
 export enum ChartType {}
+
+export interface CSVFile {
+  name: string;
+  size: number;
+  data: any[];
+  fields: string[];
+  mapping: Mapping[];
+}
+
+export interface MappedTransaction {
+  title: string;
+  valueBrl: string;
+  occurredAt: string;
+}
+export interface Mapping {
+  key: keyof MappedTransaction;
+  value: string;
+}

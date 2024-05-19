@@ -8,6 +8,7 @@ import { Transaction, TransactionType } from "@/dto/types";
 import { Badge } from "@/components/ui/badge";
 import { DataTableRowActions } from "./row-actions";
 
+export const columnsAlias = ["title", "occurredAt", "valueBrl"];
 export const columns: ColumnDef<Transaction>[] = [
   {
     id: "select",
@@ -37,8 +38,9 @@ export const columns: ColumnDef<Transaction>[] = [
   },
   {
     accessorKey: "title",
+    meta: {},
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Título" />
+      <DataTableColumnHeader column={column} title={columnsAlias[0]} />
     ),
     cell: ({ row }) => {
       return (
@@ -53,7 +55,7 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "labels",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Labels" />
+      <DataTableColumnHeader column={column} title="Categorias" />
     ),
     cell: ({ row }) => {
       return (
@@ -75,7 +77,7 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "occurredAt",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Data" />
+      <DataTableColumnHeader column={column} title={columnsAlias[1]} />
     ),
     cell: ({ row }) => {
       return (
@@ -90,7 +92,7 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "valueBrl",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Valor" />
+      <DataTableColumnHeader column={column} title={columnsAlias[2]} />
     ),
     cell: ({ row }) => {
       return (

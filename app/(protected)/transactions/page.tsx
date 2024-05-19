@@ -8,6 +8,7 @@ import AddTransactionDialog from "@/components/dialogs/add-transaction-dialog";
 import { authOptions } from "@/lib/auth-options";
 import { getServerSession } from "next-auth";
 import { Label, Transaction } from "@/dto/types";
+import ImportFilesDialog from "@/components/dialogs/import-files-dialog";
 
 export const metadata: Metadata = {
   title: "Movimentações",
@@ -22,6 +23,7 @@ export default async function Transactions({
   const session = await getServerSession(authOptions);
   const profileId = session?.user.selectedProfile?.id;
   const isAddTransactionDialogOpen = !!searchParams["t"];
+  const isImportFilesDialogOpen = !!searchParams["i"];
 
   let transactions: Transaction[] = [];
   let labels: Label[] = [];
@@ -44,6 +46,7 @@ export default async function Transactions({
       </Suspense>
 
       <AddTransactionDialog labels={labels} open={isAddTransactionDialogOpen} />
+      <ImportFilesDialog open={isImportFilesDialogOpen} />
     </div>
   );
 }

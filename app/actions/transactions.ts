@@ -1,9 +1,19 @@
 "use server";
 
-import { Label, Transaction, TransactionType } from "@/dto/types";
+import {
+  Label,
+  MappedTransaction,
+  Transaction,
+  TransactionType,
+} from "@/dto/types";
 import { prisma } from "@/prisma/client";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { getWalletByMonthAndYear, updateOrCreateWallet } from "./wallet";
+import {
+  convertStringToDate,
+  currencyStringToTransactionValue,
+  isValidDate,
+} from "@/lib/utils";
 
 export interface AddTransactionDTO {
   title: string;
@@ -67,5 +77,32 @@ export async function createTransaction(
         connect: transaction.labels,
       },
     },
+  });
+}
+
+export async function createTransactions(
+  profileId: string,
+  transactions: MappedTransaction[]
+) {
+  // const month = transaction.occurredAt.getMonth();
+  // const year = transaction.occurredAt.getFullYear();
+  // const currWallet = await getWalletByMonthAndYear(profileId, month, year);
+
+  // const wallet = await updateOrCreateWallet(profileId, transaction, currWallet);
+
+  await prisma.transaction.createMany({
+    data: transactions.map((t) => {
+      const { valueBrl, type } = currencyStringToTransactionValue(t.valueBrl);
+      return {
+        walletId: "clw9pigra000fgurc5orawod3",
+        title: t.title ?? `Movimentação de ${t.occurredAt}`,
+        occurredAt: isValidDate(t.occurredAt)
+          ? convertStringToDate(t.occurredAt)
+          : new Date(),
+        valueBrl: valueBrl,
+        type: type,
+        // fileId:
+      };
+    }),
   });
 }

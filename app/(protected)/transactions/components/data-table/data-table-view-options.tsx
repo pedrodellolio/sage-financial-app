@@ -25,10 +25,15 @@ export function DataTableViewOptions<TData>({
   const params = useSearchParams();
 
   const isAddTransactionDialogOpen = !!params.get("t");
+  const isImportFilesDialogOpen = !!params.get("i");
 
   const handleOpenDialog = () => {
     if (!isAddTransactionDialogOpen) {
       router.push("?t=" + 1);
+    }
+
+    if (!isImportFilesDialogOpen) {
+      router.push("?i=" + 1);
     }
   };
   return (
@@ -68,6 +73,15 @@ export function DataTableViewOptions<TData>({
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <Button
+        variant="default"
+        size="sm"
+        className="ml-auto hidden h-8 lg:flex"
+        onClick={handleOpenDialog}
+      >
+        <Plus className="mr-2 h-4 w-4" />
+        Importar Excel
+      </Button>
       <Button
         variant="default"
         size="sm"
