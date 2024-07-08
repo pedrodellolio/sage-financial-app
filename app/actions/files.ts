@@ -12,7 +12,7 @@ export async function getFiles(profileId?: string) {
 }
 
 export async function createFiles(profileId: string, files: AddFileDTO[]) {
-  return await prisma.file.createMany({
+  return await prisma.file.createManyAndReturn({
     data: files.map((f) => {
       return { profileId, name: f.name };
     }),

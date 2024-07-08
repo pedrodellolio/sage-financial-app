@@ -25,11 +25,11 @@ import {
 } from "@/schemas/file-mapping-schema";
 import { useForm } from "react-hook-form";
 import { Form, FormField } from "./ui/form";
-import { CSVFile } from "@/dto/types";
+import { UploadedFile } from "@/dto/types";
 import { Mapping } from "./dialogs/import-files-dialog";
 
 interface Props {
-  file: CSVFile;
+  file: UploadedFile;
   handleMappingChange: (value: Mapping[]) => void;
 }
 

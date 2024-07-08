@@ -5,6 +5,8 @@ import Link from "next/link";
 const links = [
   { title: "Dashboard", to: "/dashboard", icon: "" },
   { title: "Movimentações", to: "/transactions", icon: "" },
+  { title: "Planejamento", to: "/budget", icon: "" },
+
 ];
 
 export default function NavbarLinks() {

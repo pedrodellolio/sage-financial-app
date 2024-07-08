@@ -24,15 +24,11 @@ import { useCallback, useState } from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { usePapaParse } from "react-papaparse";
 import { CollapsibleFileCard } from "../collapsable-file-card";
-import { CSVFile, Label, MappedTransaction } from "@/dto/types";
+import { UploadedFile } from "@/dto/types";
 import { createFiles } from "@/app/actions/files";
 import { useSession } from "next-auth/react";
-import {
-  AddTransactionDTO,
-  createTransactions,
-} from "@/app/actions/transactions";
+import { createTransactions } from "@/app/actions/transactions";
 import { fileDataToTransactions } from "@/lib/utils";
-import { TransactionType } from "@prisma/client";
 
 interface Props {
   open: boolean;
@@ -77,7 +73,7 @@ export default function ImportFilesDialog(props: Props) {
     },
   });
 
-  const [files, setFiles] = useState<CSVFile[]>([]);
+  const [files, setFiles] = useState<UploadedFile[]>([]);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const parseCSVString = (csv: string, file: File) => {
@@ -95,6 +91,7 @@ export default function ImportFilesDialog(props: Props) {
               data,
               fields: meta.fields ?? [],
               mapping: [],
+              errors: [],
             },
           ];
         });
@@ -117,20 +114,22 @@ export default function ImportFilesDialog(props: Props) {
   // };
 
   const handleUploadFiles = async () => {
-    if (profileId) {
-      const filesArray = files.map((f) => {
-        return { profileId: profileId, name: f.name };
-      });
-      const teste = await createFiles(profileId, filesArray);
-      console.log(teste);
-      const filesData = files.map((file) =>
-        fileDataToTransactions(file.data, file.mapping)
-      );
-      for (const transactions of filesData) {
-        console.log(transactions);
-        await createTransactions(profileId, transactions);
+    try {
+      if (profileId) {
+        const filesArray = files.map((f) => {
+          return { profileId: profileId, name: f.name };
+        });
+        const filesDb = await createFiles(profileId, filesArray);
+        
+        const filesData = files.map((file, i) => {
+          const fileId = filesDb.find((_, dbIndex) => dbIndex === i)?.id;
+          return fileDataToTransactions(fileId!, file);
+        });
+        for (const transactions of filesData) {
+          await createTransactions(profileId, transactions);
+        }
       }
-    }
+    } catch (err) {}
   };
 
   if (isDesktop) {

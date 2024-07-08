@@ -44,17 +44,31 @@ export enum TransactionType {
   INCOME = "INCOME",
 }
 
+export enum BudgetType {
+  PERCENTAGE = "PERCENTAGE",
+  CURRENCY = "CURRENCY",
+}
+
+export interface Budget {
+  id: string;
+  profileId: string;
+  value: number;
+  type: BudgetType;
+}
+
 export enum ChartType {}
 
-export interface CSVFile {
+export interface UploadedFile {
   name: string;
   size: number;
   data: any[];
   fields: string[];
   mapping: Mapping[];
+  errors: string[];
 }
 
 export interface MappedTransaction {
+  fileId: string;
   title: string;
   valueBrl: string;
   occurredAt: string;
@@ -62,4 +76,11 @@ export interface MappedTransaction {
 export interface Mapping {
   key: keyof MappedTransaction;
   value: string;
+}
+
+export interface File {
+  id: string;
+  profileId: string;
+  name: string;
+  uploadedAt: Date;
 }

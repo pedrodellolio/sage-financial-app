@@ -1,66 +1,36 @@
 "use client";
 
-import { Checkbox } from "@/components/ui/checkbox";
-import { ColumnDef } from "@tanstack/react-table";
-import { DataTableColumnHeader } from "../../../../../components/data-table/data-table-column-header";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Transaction, TransactionType } from "@/dto/types";
 import { Badge } from "@/components/ui/badge";
 import { DataTableRowActions } from "./row-actions";
+import { GridColDef } from "@mui/x-data-grid";
 
-export const columnsAlias = ["title", "occurredAt", "valueBrl"];
-export const columns: ColumnDef<Transaction>[] = [
+export const columns: GridColDef<Transaction>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "title",
-    meta: {},
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={columnsAlias[0]} />
-    ),
-    cell: ({ row }) => {
+    field: "title",
+    headerName: "Título",
+    headerClassName: "h-[500px]",
+    flex: 1,
+    renderCell: (params) => {
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {row.getValue("title")}
+            {params.value}
           </span>
         </div>
       );
     },
   },
   {
-    accessorKey: "labels",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Categorias" />
-    ),
-    cell: ({ row }) => {
+    field: "labels",
+    headerName: "Label",
+    maxWidth: 150,
+    flex: 1,
+    renderCell: (params) => {
       return (
-        <div className="flex w-[100px] items-center">
-          {row.original.labels.map((label) => {
+        <div className="flex items-center h-full">
+          {params.row.labels.map((label) => {
             return (
               <Badge key={label.id} variant="outline">
                 {label.title}
@@ -70,46 +40,51 @@ export const columns: ColumnDef<Transaction>[] = [
         </div>
       );
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
+    // filterFn: (row, id, value) => {
+    //   return value.includes(row.getValue(id));
+    // },
   },
   {
-    accessorKey: "occurredAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={columnsAlias[1]} />
-    ),
-    cell: ({ row }) => {
+    field: "occurredAt",
+    headerName: "Data",
+    flex: 1,
+    renderCell: (params) => {
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {formatDate(row.getValue("occurredAt"))}
+            {formatDate(params.value)}
           </span>
         </div>
       );
     },
   },
   {
-    accessorKey: "valueBrl",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={columnsAlias[2]} />
-    ),
-    cell: ({ row }) => {
+    field: "valueBrl",
+    headerName: "Valor",
+    flex: 1,
+    renderCell: (params) => {
       return (
         <div className="flex space-x-2">
           <span className={`max-w-[500px] truncate font-medium`}>
-            {row.original.type === TransactionType.EXPENSE && "-"}
-            {formatCurrency(row.getValue("valueBrl"))}
+            {params.row.type === TransactionType.EXPENSE && "-"}
+            {formatCurrency(params.value)}
           </span>
         </div>
       );
     },
   },
   {
-    id: "actions",
-    cell: ({ row }) => {
-      const transaction = row.original;
-      return <DataTableRowActions data={transaction} />;
+    field: "actions",
+    headerName: "",
+    maxWidth: 55,
+    flex: 1,
+    sortable: false,
+    editable: false,
+    filterable: false,
+    resizable: false,
+    disableColumnMenu: true,
+    renderCell: (params) => {
+      return <DataTableRowActions data={params.row} />;
     },
   },
 ];

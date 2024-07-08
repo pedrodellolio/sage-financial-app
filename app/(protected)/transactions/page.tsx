@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { columns } from "./components/data-table/columns";
 import { TransactionsDataTable } from "./components/data-table/data-table";
 import { Suspense } from "react";
 import { getTransactions } from "@/app/actions/transactions";
@@ -25,25 +24,26 @@ export default async function Transactions({
   const isAddTransactionDialogOpen = !!searchParams["t"];
   const isImportFilesDialogOpen = !!searchParams["i"];
 
+  let isLoading = false;
+  let isError = false;
   let transactions: Transaction[] = [];
   let labels: Label[] = [];
   if (profileId) {
-    transactions = await getTransactions(profileId);
-    labels = await getLabels(profileId);
+    try {
+      isLoading = true;
+      transactions = await getTransactions(profileId);
+      labels = await getLabels(profileId);
+    } catch (err) {
+      isError = true;
+    } finally {
+      isLoading = false;
+    }
   }
 
   return (
     <div className="w-full">
       <h2 className="text-3xl font-bold tracking-tight mb-4">Movimentações</h2>
-      <Suspense fallback={"Carregando..."}>
-        <TransactionsDataTable
-          data={transactions}
-          columns={columns}
-          labels={labels.map((l) => {
-            return { id: l.id, title: l.title, hexColor: l.colorHex };
-          })}
-        />
-      </Suspense>
+      <TransactionsDataTable data={transactions} loading={isLoading} />
 
       <AddTransactionDialog labels={labels} open={isAddTransactionDialogOpen} />
       <ImportFilesDialog open={isImportFilesDialogOpen} />

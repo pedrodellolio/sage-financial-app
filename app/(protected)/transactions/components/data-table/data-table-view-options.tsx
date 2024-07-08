@@ -15,11 +15,11 @@ import { Plus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface DataTableViewOptionsProps<TData> {
-  table: Table<TData>;
+  // table: Table<TData>;
 }
 
 export function DataTableViewOptions<TData>({
-  table,
+  // table,
 }: DataTableViewOptionsProps<TData>) {
   const router = useRouter();
   const params = useSearchParams();
@@ -40,19 +40,19 @@ export function DataTableViewOptions<TData>({
     <div className="flex flex-row items-center gap-4">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
+          {/* <Button
             variant="outline"
             size="sm"
             className="ml-auto hidden h-8 lg:flex"
           >
             <SlidersHorizontal className="mr-2 h-4 w-4" />
             Colunas
-          </Button>
+          </Button> */}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[150px]">
           <DropdownMenuLabel>Ver colunas</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {table
+          {/* {table
             .getAllColumns()
             .filter(
               (column) =>
@@ -69,12 +69,12 @@ export function DataTableViewOptions<TData>({
                   {column.id}
                 </DropdownMenuCheckboxItem>
               );
-            })}
+            })} */}
         </DropdownMenuContent>
       </DropdownMenu>
 
       <Button
-        variant="default"
+        variant="outline"
         size="sm"
         className="ml-auto hidden h-8 lg:flex"
         onClick={handleOpenDialog}

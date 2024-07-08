@@ -29,7 +29,6 @@ export async function getTransactions(
   endDate?: Date
 ) {
   noStore;
-
   const transactions = await prisma.transaction.findMany({
     include: { labels: true },
     where: {
@@ -101,7 +100,7 @@ export async function createTransactions(
           : new Date(),
         valueBrl: valueBrl,
         type: type,
-        // fileId:
+        fileId: t.fileId,
       };
     }),
   });

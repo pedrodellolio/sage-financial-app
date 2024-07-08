@@ -1,5 +1,4 @@
-import { AddTransactionDTO } from "@/app/actions/transactions";
-import { MappedTransaction, Mapping } from "@/dto/types";
+import { File, MappedTransaction, Mapping, UploadedFile } from "@/dto/types";
 import { TransactionType } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
 import { DateRange } from "react-day-picker";
@@ -44,17 +43,20 @@ export function formatToBRLCurrency(value: string): string {
 }
 
 export function currencyStringToTransactionValue(currencyString: string) {
+  let error: string | undefined = undefined;
   const cleanedString = currencyString.replace(/R\$/g, "").replace(/\s/g, "");
   const normalizedString = cleanedString.replace(",", ".");
   const numberValue = parseFloat(normalizedString);
 
   if (isNaN(numberValue)) {
-    throw new Error(`Invalid currency string: ${currencyString}`);
+    const message = `Tentativa de conversão inválida: ${currencyString}`;
+    error = message;
+    throw new Error(message);
   }
 
   const type =
     numberValue < 0 ? TransactionType.EXPENSE : TransactionType.INCOME;
-  return { valueBrl: Math.abs(numberValue), type: type };
+  return { valueBrl: Math.abs(numberValue), type: type, error };
 }
 
 export function convertStringToDate(dateString: string): Date {
@@ -84,16 +86,30 @@ export function formatBytes(bytes: number) {
 }
 
 export function fileDataToTransactions(
-  data: any[],
-  mapping: Mapping[]
-): MappedTransaction[] {
-  let transactions: MappedTransaction[] = [];
-  data.map((item) => {
-    const mappedObj: Partial<MappedTransaction> = {};
-    mapping.forEach((map) => {
-      mappedObj[map.key] = item[map.value];
+  fileId: string,
+  file: UploadedFile
+): any[] {
+  let transactions: any[] = [];
+  file.data.map((item) => {
+    const mapped: Partial<MappedTransaction> = {};
+    file.mapping.forEach((map) => {
+      mapped[map.key] = item[map.value];
     });
-    transactions.push(mappedObj as MappedTransaction);
+
+    const { valueBrl, type, error } = currencyStringToTransactionValue(
+      mapped.valueBrl ?? "R$0,00"
+    );
+    transactions.push({
+      title: mapped.title ?? `Movimentação de ${mapped.occurredAt}`,
+      occurredAt:
+        mapped.occurredAt && isValidDate(mapped.occurredAt)
+          ? convertStringToDate(mapped.occurredAt)
+          : new Date(),
+      valueBrl: valueBrl,
+      type: type,
+      fileId,
+    });
   });
+
   return transactions;
 }

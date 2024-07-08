@@ -40,6 +40,17 @@ export async function calculateSummary(
   }
 }
 
+export async function getPeriodIncome(
+  profileId: string,
+  startDate?: Date,
+  endDate?: Date
+) {
+  const transactions = await getTransactions(profileId, startDate, endDate);
+  return transactions
+    ?.filter((t) => t.type === TransactionType.INCOME)
+    .reduce((acc, cur) => acc + cur.valueBrl, 0);
+}
+
 export async function getDailyExpenses(
   profileId: string,
   startDate: Date,
