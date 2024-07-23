@@ -19,10 +19,9 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import AddTransactionForm from "../forms/add-transaction-form";
 import { useRouter } from "next/navigation";
 import { Label } from "@/dto/types";
-import AddBudgetForm from "../forms/add-budget-form";
+import AddBudgetGoalForm from "../forms/add-budget-goal-form";
 
 interface Props {
   open: boolean;
@@ -47,7 +46,7 @@ export default function AddBudgetDialog(props: Props) {
               Defina um orçamento para uma label.
             </DialogDescription>
           </DialogHeader>
-          <AddBudgetForm labels={props.labels} />
+          <AddBudgetGoalForm labels={props.labels} />
         </DialogContent>
       </Dialog>
     );

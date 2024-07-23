@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionWrapper } from "@/components/wrappers/session-wrapper";
-import { UserPreferencesWrapper } from "@/components/wrappers/user-preferences-wrapper";
+import { BudgetWrapper } from "@/components/wrappers/budget-wrapper";
+import { UserWrapper } from "@/components/wrappers/user-wrapper";
+import { DashboardWrapper } from "@/components/wrappers/dashboard-wrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,11 +20,15 @@ export default function RootLayout({
 }>) {
   return (
     <SessionWrapper>
-      <html lang="pt-br">
-        <UserPreferencesWrapper>
-          <body className={`${inter.className}`}>{children}</body>
-        </UserPreferencesWrapper>
-      </html>
+      <UserWrapper>
+        <DashboardWrapper>
+          <BudgetWrapper>
+            <html lang="pt-br">
+              <body className={`${inter.className}`}>{children}</body>
+            </html>
+          </BudgetWrapper>
+        </DashboardWrapper>
+      </UserWrapper>
     </SessionWrapper>
   );
 }

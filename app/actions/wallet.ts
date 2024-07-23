@@ -1,7 +1,6 @@
-import { Profile, Transaction, TransactionType, Wallet } from "@/dto/types";
-import { prisma } from "@/prisma/client";
+import { TransactionType, Wallet } from "@/dto/types";
+import { prisma } from "@/lib/prisma";
 import { AddTransactionDTO } from "./transactions";
-import { Prisma } from "@prisma/client";
 
 export async function getWalletByMonthAndYear(
   profileId: string,

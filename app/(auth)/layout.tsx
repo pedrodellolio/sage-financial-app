@@ -1,5 +1,3 @@
-import Footer from "@/components/footer";
-import Header from "@/components/header";
 import { authOptions } from "@/lib/auth-options";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
@@ -15,11 +13,9 @@ export default async function AuthRoot({
 
   return (
     <div>
-      <Header />
-      <main className="min-h-screen flex flex-col items-center mt-4">
+      <main className="min-h-screen flex flex-col items-center">
         {children}
       </main>
-      <Footer />
     </div>
   );
 }

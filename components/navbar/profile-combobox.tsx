@@ -17,22 +17,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Profile } from "@/dto/types";
 import axios from "axios";
-import { useSearchParams } from "next/navigation";
+import { useUser } from "@/hooks/use-user";
 
 interface Props {
   handleSelection?: (profile: Profile) => Promise<void>;
 }
 
 export function ProfileCombobox(props: Props) {
-  const { data: session } = useSession();
-  const searchParams = useSearchParams();
-
+  const { profile, setProfile } = useUser();
+  console.log(profile);
   const [data, setData] = useState<Profile[]>([]);
   const [open, setOpen] = useState(false);
-  const [profile, setProfile] = useState<Profile | null | undefined>();
 
   useEffect(() => {
     const loadData = async () => {
@@ -44,13 +41,13 @@ export function ProfileCombobox(props: Props) {
     loadData();
   }, []);
 
-  useEffect(() => {
-    const profile = data.find((d) => d.id === searchParams.get("profile"));
-    if (profile) setProfile(profile);
-    else setProfile(session?.user.selectedProfile);
-  }, [data, session]);
+  // useEffect(() => {
+  //   const profile = data.find((d) => d.id === searchParams.get("profile"));
+  //   if (profile) setProfile(profile);
+  //   else setProfile(session?.user.selectedProfile);
+  // }, [data, session]);
 
-  const handleSelectProfile = async (profile: Profile | undefined) => {
+  const handleSelectProfile = async (profile: Profile | null) => {
     setOpen(false);
     props.handleSelection && profile && (await props.handleSelection(profile));
     setProfile(profile);
@@ -81,7 +78,7 @@ export function ProfileCombobox(props: Props) {
                   value={d.title}
                   onSelect={(currentValue) => {
                     const profile = data.find((p) => p.title === currentValue);
-                    handleSelectProfile(profile);
+                    handleSelectProfile(profile ?? null);
                   }}
                 >
                   <Check

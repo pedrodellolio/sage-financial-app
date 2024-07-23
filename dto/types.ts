@@ -1,4 +1,4 @@
-import { AddTransactionDTO } from "@/app/actions/transactions";
+import { BudgetGoalType } from "@prisma/client";
 
 export interface Profile {
   id: string;
@@ -44,16 +44,19 @@ export enum TransactionType {
   INCOME = "INCOME",
 }
 
-export enum BudgetType {
-  PERCENTAGE = "PERCENTAGE",
-  CURRENCY = "CURRENCY",
-}
-
 export interface Budget {
   id: string;
   profileId: string;
+  month: number;
+  year: number;
+}
+
+export interface BudgetGoal {
+  id: string;
+  label: Label;
+  budget: Budget;
   value: number;
-  type: BudgetType;
+  type: BudgetGoalType;
 }
 
 export enum ChartType {}

@@ -1,25 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { format, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { capitalizeText } from "@/lib/utils";
+import { useBudget } from "@/hooks/use-budget";
 
 export default function MonthChanger() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const { period, setPeriod } = useBudget();
+  const getCurrentDate = () => new Date(period[1], period[0] - 1);
+
+  const currentDate = getCurrentDate();
 
   const handlePreviousMonth = () => {
-    setCurrentDate(subMonths(currentDate, 1));
+    const newDate = subMonths(currentDate, 1);
+    setPeriod([newDate.getMonth() + 1, newDate.getFullYear()]);
   };
 
   const handleNextMonth = () => {
-    setCurrentDate(addMonths(currentDate, 1));
+    const newDate = addMonths(currentDate, 1);
+    setPeriod([newDate.getMonth() + 1, newDate.getFullYear()]);
   };
 
   const handleCurrentMonth = () => {
-    setCurrentDate(new Date());
+    const today = new Date();
+    setPeriod([today.getMonth() + 1, today.getFullYear()]);
   };
 
   return (

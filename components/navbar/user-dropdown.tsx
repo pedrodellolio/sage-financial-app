@@ -14,7 +14,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-export function UserDropdown() {
+interface Props {
+  onboarding?: boolean;
+}
+
+export function UserDropdown({ onboarding }: Props) {
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -42,22 +46,19 @@ export function UserDropdown() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          {/* <DropdownMenuItem>
-            Perfi
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-          </DropdownMenuItem> */}
-          <DropdownMenuItem onClick={() => router.push("/settings/account")}>
-            Preferências
-            {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
-          </DropdownMenuItem>
-          {/* <DropdownMenuItem>New Team</DropdownMenuItem> */}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>
-          Sair
-          {/* <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut> */}
-        </DropdownMenuItem>
+        {onboarding && (
+          <>
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={() => router.push("/settings/account")}
+              >
+                Preferências
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        <DropdownMenuItem onClick={() => signOut()}>Sair</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

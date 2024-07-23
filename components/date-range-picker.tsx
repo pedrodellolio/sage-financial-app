@@ -10,10 +10,10 @@ import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
 import { DateRange } from "react-day-picker";
 import { ptBR } from "date-fns/locale";
-import { useUserPreferences } from "@/hooks/use-user-preferences";
-import { revalidatePath } from "next/cache";
+import { useUser } from "@/hooks/use-user";
 import { useRouter } from "next/navigation";
 import { PopoverClose } from "@radix-ui/react-popover";
+import { useDashboard } from "@/hooks/use-dashboard";
 
 interface Props {
   handleSelect: (range: DateRange | undefined) => void;
@@ -23,8 +23,7 @@ export function DateRangePicker({
   className,
   handleSelect,
 }: Props & React.HTMLAttributes<HTMLDivElement>) {
-  const { dashboardDateRange: date, setDashboardDateRange: setDate } =
-    useUserPreferences();
+  const { dateRange: date, setDateRange: setDate } = useDashboard();
 
   const router = useRouter();
   return (

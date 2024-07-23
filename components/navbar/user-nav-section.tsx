@@ -10,12 +10,6 @@ import { useRouter } from "next/navigation";
 export default async function UserNavSection() {
   const router = useRouter();
   const session = await getServerSession(authOptions);
-  const userId = session?.user.id;
-
-  let profiles: Profile[] = [];
-  if (userId) {
-    profiles = await getProfiles(session?.user.id);
-  }
 
   const handleSelectProfile = async (profile: Profile | undefined) => {
     await updateSelectedProfile(session?.user.id, profile?.id);
@@ -24,7 +18,7 @@ export default async function UserNavSection() {
 
   return (
     <div className="flex flex-row items-center gap-4">
-      <ProfileCombobox data={profiles} />
+      <ProfileCombobox handleSelection={handleSelectProfile} />
       <UserDropdown />
     </div>
   );

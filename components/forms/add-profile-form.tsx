@@ -13,7 +13,7 @@ import {
 } from "../ui/form";
 import { useForm } from "react-hook-form";
 import { Text } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AdornedInput } from "../adorned-input";
 import { useSession } from "next-auth/react";
 import { createProfile } from "@/app/actions/profile";
@@ -21,10 +21,21 @@ import {
   AddProfileFormData,
   addProfileSchema,
 } from "@/schemas/add-profile-schema";
+import { useUser } from "@/hooks/use-user";
 
-export default function AddProfileForm(props: React.ComponentProps<"form">) {
+interface Props {
+  onboarding?: boolean;
+}
+
+export default function AddProfileForm(
+  props: React.ComponentProps<"form"> & Props
+) {
+  const { profile, setProfile } = useUser();
   const { data: session } = useSession();
+
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
 
   const form = useForm<AddProfileFormData>({
     resolver: zodResolver(addProfileSchema),
@@ -36,8 +47,14 @@ export default function AddProfileForm(props: React.ComponentProps<"form">) {
   async function addProfile(data: AddProfileFormData) {
     const userId = session?.user.id;
     if (userId) {
-      await createProfile(userId, data);
-      router.back();
+      const createdProfile = await createProfile(userId, data);
+      //set selected profile if selected profile is null
+      if (props.onboarding && !profile) {
+        setProfile(createdProfile);
+        callbackUrl && router.replace(callbackUrl);
+      } else {
+        router.back();
+      }
     }
   }
 
@@ -46,7 +63,7 @@ export default function AddProfileForm(props: React.ComponentProps<"form">) {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(addProfile)}
-          className={cn("grid items-start gap-5", props.className)}
+          className={cn("grid items-start gap-5 w-full", props.className)}
         >
           <FormField
             control={form.control}

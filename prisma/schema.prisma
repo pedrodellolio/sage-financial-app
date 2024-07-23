@@ -76,6 +76,7 @@ model Profile {
   Wallet Wallet[]
   Chart  Chart[]
   File   File[]
+  Budget Budget[]
 }
 
 model Wallet {
@@ -114,6 +115,33 @@ model Label {
   createdAt    DateTime      @default(now())
   profile      Profile       @relation(fields: [profileId], references: [id])
   transactions Transaction[]
+  BudgetGoal   BudgetGoal[]
+}
+
+model SystemLabel {
+  id       String @id @default(cuid())
+  title    String @unique
+  colorHex String
+}
+
+model Budget {
+  id         String       @id @default(cuid())
+  profileId  String
+  month      Int
+  year       Int
+  BudgetGoal BudgetGoal[]
+  profile    Profile      @relation(fields: [profileId], references: [id])
+}
+
+model BudgetGoal {
+  id       String         @id @default(cuid())
+  labelId  String
+  budgetId String
+  value    Int
+  type     BudgetGoalType
+
+  label  Label  @relation(fields: [labelId], references: [id])
+  budget Budget @relation(fields: [budgetId], references: [id])
 }
 
 model File {
@@ -166,4 +194,9 @@ model ChartType {
 enum TransactionType {
   EXPENSE
   INCOME
+}
+
+enum BudgetGoalType {
+  PERCENTAGE
+  CURRENCY
 }

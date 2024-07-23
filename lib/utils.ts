@@ -1,6 +1,7 @@
 import { File, MappedTransaction, Mapping, UploadedFile } from "@/dto/types";
 import { TransactionType } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
+import { getMonth, getYear } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { twMerge } from "tailwind-merge";
 
@@ -112,4 +113,11 @@ export function fileDataToTransactions(
   });
 
   return transactions;
+}
+
+export function getCurrentPeriod(): [number, number] {
+  const currentDate = new Date();
+  const currentMonth = getMonth(currentDate) + 1;
+  const currentYear = getYear(currentDate);
+  return [currentMonth, currentYear];
 }

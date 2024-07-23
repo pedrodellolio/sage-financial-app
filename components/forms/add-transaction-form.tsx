@@ -265,7 +265,7 @@ export default function AddTransactionForm(
               )}
             />
           </div>
-          <Button type="submit">Adicionar</Button>
+          <Button type="submit" className="mt-2">Adicionar</Button>
         </form>
       </Form>
     </>

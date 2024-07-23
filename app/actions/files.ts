@@ -1,5 +1,5 @@
 "use server";
-import { prisma } from "@/prisma/client";
+import { prisma } from "@/lib/prisma";
 
 export interface AddFileDTO {
   name: string;

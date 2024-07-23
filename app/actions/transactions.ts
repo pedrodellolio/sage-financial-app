@@ -6,7 +6,6 @@ import {
   Transaction,
   TransactionType,
 } from "@/dto/types";
-import { prisma } from "@/prisma/client";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { getWalletByMonthAndYear, updateOrCreateWallet } from "./wallet";
 import {
@@ -14,6 +13,7 @@ import {
   currencyStringToTransactionValue,
   isValidDate,
 } from "@/lib/utils";
+import { prisma } from "@/lib/prisma";
 
 export interface AddTransactionDTO {
   title: string;
