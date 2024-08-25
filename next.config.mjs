@@ -15,6 +15,11 @@ const nextConfig = {
         destination: "/dashboard",
         permanent: true,
       },
+      {
+        source: "/onboarding",
+        destination: "/onboarding/profile",
+        permanent: true,
+      },
     ];
   },
 };

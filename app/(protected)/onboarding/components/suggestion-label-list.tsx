@@ -2,7 +2,14 @@
 
 import { SystemLabel } from "@prisma/client";
 import axios from "axios";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  Suspense,
+  useEffect,
+  useState,
+} from "react";
+import LabelSkeleton from "../label/label-skeleton";
 
 type Props = {
   selected: SystemLabel[];
@@ -14,7 +21,6 @@ export default function SuggestionLabelList({ selected, setSelected }: Props) {
 
   useEffect(() => {
     axios.get("/api/getAllSystemLabel").then((res) => {
-      console.log(res);
       setSystemLabels(res.data);
     });
   }, []);
@@ -31,7 +37,7 @@ export default function SuggestionLabelList({ selected, setSelected }: Props) {
 
   return (
     <div className="grid grid-cols-3 gap-4 mt-10">
-      {systemLabels.length > 0 &&
+      {systemLabels.length > 0 ? (
         systemLabels.map((s) => {
           return (
             <div
@@ -45,7 +51,10 @@ export default function SuggestionLabelList({ selected, setSelected }: Props) {
               <p className="text-sm">{s.title}</p>
             </div>
           );
-        })}
+        })
+      ) : (
+        <LabelSkeleton />
+      )}
     </div>
   );
 }

@@ -2,7 +2,6 @@
 import { prisma } from "@/lib/prisma";
 import { isAuthenticated } from "./user";
 import { SystemLabel } from "@prisma/client";
-import { redirect } from "next/navigation";
 
 export interface AddLabelDTO {
   title: string;

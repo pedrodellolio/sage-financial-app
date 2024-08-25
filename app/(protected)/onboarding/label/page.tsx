@@ -12,7 +12,7 @@ export default function LabelStep({}: Props) {
         <p className="text-sm text-muted-foreground">
           Categorias ajudam a identificar movimentações realizadas por você
         </p>
-        <div>
+        <div className="w-[28rem] h-[420px]">
           <AddLabelOnboardingForm />
         </div>
       </div>

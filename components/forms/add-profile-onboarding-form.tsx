@@ -5,21 +5,27 @@ import { useFormStatus } from "react-dom";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { parseAndCreateProfile } from "@/app/actions/profile";
+import { parseAndCreateOrUpdateProfile } from "@/app/actions/profile";
 import { useState } from "react";
 import { useOnboarding } from "@/hooks/use-onboarding";
+import { Profile } from "@prisma/client";
+
+interface Props {
+  data: Profile | null;
+}
 
 export default function AddProfileOnboardingForm(
-  props: React.ComponentProps<"form">
+  props: Props & React.ComponentProps<"form">
 ) {
   const { nextStep } = useOnboarding();
 
+  const [title, setTitle] = useState(props.data?.title || "");
   const [errors, setErrors] = useState<{
     title?: string[] | undefined;
   }>();
 
   const onCreate = async (formData: FormData) => {
-    const res = await parseAndCreateProfile(formData);
+    const res = await parseAndCreateOrUpdateProfile(formData, props.data?.id);
     nextStep();
     setErrors(res.errors);
   };
@@ -27,16 +33,17 @@ export default function AddProfileOnboardingForm(
   return (
     <form
       action={onCreate}
-      className={cn("grid items-start gap-5", props.className)}
+      className={cn("grid items-start gap-5 h-full mt-10", props.className)}
     >
-      <div className="grid gap-6">
-        <div className="grid gap-2">
+      <div className="grid gap-6 h-full">
+        <div className="flex flex-col gap-2 h-full">
           <Label htmlFor="title">Perfil</Label>
           <Input
             autoComplete="off"
             name="title"
             type="text"
             placeholder="Ex: Pessoal, Trabalho, Família..."
+            defaultValue={props.data?.title}
             required
           />
           <small className="text-muted-foreground">

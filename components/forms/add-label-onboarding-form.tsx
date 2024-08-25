@@ -25,14 +25,13 @@ export default function AddLabelOnboardingForm() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center gap-2 h-full">
       <SuggestionLabelList selected={selected} setSelected={setSelected} />
       <small className="text-center text-muted-foreground/80 mt-2">
         É possível criar ou adicionar novas categorias a qualquer momento.
       </small>
-
       <div className="flex flex-row items-center justify-between mt-10 w-full">
-        <Button onClick={() => handlePreviousStep} variant={"outline"}>
+        <Button onClick={handlePreviousStep} type="button" variant={"outline"}>
           Voltar
         </Button>
         <Button onClick={handleAddLabels}>Finalizar</Button>

@@ -5,7 +5,7 @@ import { addProfileSchema } from "@/schemas/add-profile-schema";
 import { isAuthenticated, updateSelectedProfile } from "./user";
 import { redirect } from "next/navigation";
 
-export interface AddProfileDTO {
+export interface AddOrUpdateDTO {
   title: string;
 }
 
@@ -20,17 +20,31 @@ export async function getProfiles() {
   });
 }
 
-export async function createProfile(profile: AddProfileDTO) {
+export async function getFirstProfile() {
+  const user = await isAuthenticated();
+  if (!user) throw new Error("You must be signed in to perform this action");
+  return await prisma.profile.findFirst({
+    where: {
+      userId: user.id,
+    },
+  });
+}
+
+export async function createOrUpdateProfile(
+  profile: AddOrUpdateDTO,
+  profileId?: string
+) {
   const user = await isAuthenticated();
   if (!user) throw new Error("You must be signed in to perform this action");
 
-  return await prisma.profile.create({
-    data: {
-      userId: user.id,
-      title: profile.title,
-      isActive: true,
-    },
-  });
+  return profileId
+    ? await prisma.profile.update({
+        data: { title: profile.title },
+        where: { id: profileId },
+      })
+    : await prisma.profile.create({
+        data: { userId: user.id, title: profile.title, isActive: true },
+      });
 }
 
 export async function deleteProfile(profileId: string) {
@@ -41,7 +55,10 @@ export async function deleteProfile(profileId: string) {
   });
 }
 
-export async function parseAndCreateProfile(formData: FormData) {
+export async function parseAndCreateOrUpdateProfile(
+  formData: FormData,
+  profileId?: string
+) {
   const validatedFields = addProfileSchema.safeParse(
     Object.fromEntries(formData)
   );
@@ -53,9 +70,13 @@ export async function parseAndCreateProfile(formData: FormData) {
   }
 
   try {
-    const profile = await createProfile({ title: validatedFields.data.title });
+    const profile = await createOrUpdateProfile(
+      { title: validatedFields.data.title },
+      profileId
+    );
     await updateSelectedProfile(profile.id);
   } catch (err) {
+    console.error(err);
     return {
       errors: {
         title: ["Ocorreu um erro ao criar o perfil"],
