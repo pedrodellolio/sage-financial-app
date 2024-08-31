@@ -20,6 +20,7 @@ import { useForm } from "react-hook-form";
 import { AddLabelsFormData, addLabelsSchema } from "@/schemas/add-label-schema";
 import { AddLabelDTO } from "@/dto/types";
 import { Label, SystemLabel } from "@prisma/client";
+import { toast } from "sonner";
 
 interface Props {
   data: Label[] | null;
@@ -34,9 +35,15 @@ export default function AddLabelOnboardingForm(props: Props) {
   });
 
   const onSubmit = async (values: AddLabelsFormData) => {
-    await addLabelsFromSystem(values.labels);
-    nextStep();
-    router.push("/onboarding/success");
+    try {
+      await addLabelsFromSystem(values.labels);
+      router.push("/");
+      nextStep();
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Ocorreu um erro inesperado!";
+      toast.error(errorMessage);
+    }
   };
 
   const handlePreviousStep = () => {

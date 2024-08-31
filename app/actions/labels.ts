@@ -3,79 +3,101 @@ import { prisma } from "@/lib/prisma";
 import { isAuthenticated } from "./user";
 import { Label } from "@prisma/client";
 import { AddLabelDTO } from "@/dto/types";
+import { ensureAuthenticatedUser } from "./account";
+import { FetchingDataError, ProfileRequiredError } from "@/lib/exceptions";
 
-export async function addLabelsFromSystem(
-  systemLabels: AddLabelDTO[]
-) {
-  const user = await isAuthenticated();
-  if (!user) throw new Error("Faça login para realizar essa ação");
-  if (!user.selectedProfile) throw new Error("Perfil não selecionado");
+export async function addLabelsFromSystem(systemLabels: AddLabelDTO[]) {
+  const user = await ensureAuthenticatedUser();
+  if (!user.selectedProfile) throw new ProfileRequiredError();
 
-  await prisma.label.createMany({
-    data: systemLabels.map((sl) => {
-      return {
-        title: sl.title,
-        colorHex: sl.colorHex,
-        isActive: true,
-        profileId: user.selectedProfile!.id,
-      };
-    }),
-  });
+  try {
+    await prisma.label.createMany({
+      data: systemLabels.map((sl) => {
+        return {
+          title: sl.title,
+          colorHex: sl.colorHex,
+          isActive: true,
+          profileId: user.selectedProfile!.id,
+        };
+      }),
+    });
+  } catch {
+    throw new FetchingDataError();
+  }
 }
 
 export async function createLabel(label?: AddLabelDTO, labels?: AddLabelDTO[]) {
-  const user = await isAuthenticated();
-  if (!user) throw new Error("Faça login para realizar essa ação");
-  if (!user.selectedProfile) throw new Error("Perfil não selecionado");
+  const user = await ensureAuthenticatedUser();
+  if (!user.selectedProfile) throw new ProfileRequiredError();
 
-  if (label) {
-    return await prisma.label.create({
-      data: {
-        profileId: user.selectedProfile.id,
-        title: label.title,
-        colorHex: label.colorHex,
-        isActive: true,
-      },
-    });
+  try {
+    if (label) {
+      return await prisma.label.create({
+        data: {
+          profileId: user.selectedProfile.id,
+          title: label.title,
+          colorHex: label.colorHex,
+          isActive: true,
+        },
+      });
+    }
+
+    if (labels) {
+      return await prisma.label.createMany({
+        data: labels.map((l) => ({
+          profileId: user.selectedProfile!.id,
+          title: l.title,
+          colorHex: l.colorHex,
+          isActive: true,
+        })),
+      });
+    }
+  } catch {
+    throw new FetchingDataError();
   }
-
-  if (labels) {
-    return await prisma.label.createMany({
-      data: labels.map((l) => ({
-        profileId: user.selectedProfile!.id,
-        title: l.title,
-        colorHex: l.colorHex,
-        isActive: true,
-      })),
-    });
-  }
-
-  throw new Error();
 }
 
 export async function deleteLabel(labelId: string) {
-  return await prisma.label.delete({
-    where: {
-      id: labelId,
-    },
-  });
+  await ensureAuthenticatedUser();
+  try {
+    return await prisma.label.delete({
+      where: {
+        id: labelId,
+      },
+    });
+  } catch {
+    throw new FetchingDataError();
+  }
 }
 
 export async function getLabelsFromFirstCreatedProfile(): Promise<
   Label[] | null
 > {
-  const firstCreatedProfile = await prisma.profile.findFirst({
-    include: {
-      Label: true,
-    },
-  });
-
-  return firstCreatedProfile && firstCreatedProfile?.Label;
+  await ensureAuthenticatedUser();
+  try {
+    const firstCreatedProfile = await prisma.profile.findFirst({
+      include: {
+        Label: true,
+      },
+    });
+    return firstCreatedProfile && firstCreatedProfile?.Label;
+  } catch {
+    throw new FetchingDataError();
+  }
 }
 
 export async function hasAnyLabel() {
-  const user = await isAuthenticated();
-  if (!user) throw new Error("Faça login para realizar essa ação");
-
-  return (await prisma.label.count()) > 0;
+  const user = await ensureAuthenticatedUser();
+  try {
+    const labelCount = await prisma.label.count({
+      where: {
+        profile: {
+          userId: user.id,
+        },
+      },
+    });
+    return labelCount > 0;
+  } catch {
+    throw new FetchingDataError();
+  }
 }

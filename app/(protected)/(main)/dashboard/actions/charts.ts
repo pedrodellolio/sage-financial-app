@@ -1,8 +1,9 @@
 "use server";
 
 import { getTransactions } from "@/app/actions/transactions";
-import { TransactionType, Wallet } from "@/dto/types";
+// import { TransactionType, Wallet } from "@/dto/types";
 import { prisma } from "@/lib/prisma";
+import { TransactionType, Wallet } from "@prisma/client";
 
 export interface Expense {
   occurredAt: Date;

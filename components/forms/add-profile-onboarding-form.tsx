@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface Props {
   data: Profile | null;
@@ -37,9 +38,15 @@ export default function AddProfileOnboardingForm(
   });
 
   const onSubmit = async (values: AddProfileFormData) => {
-    await addOrUpdateProfile(values.title, props.data?.id);
-    nextStep();
-    router.push("/onboarding/label");
+    try {
+      await addOrUpdateProfile(values.title, props.data?.id);
+      router.push("/onboarding/label");
+      nextStep();
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Ocorreu um erro inesperado!";
+      toast.error(errorMessage);
+    }
   };
 
   return (

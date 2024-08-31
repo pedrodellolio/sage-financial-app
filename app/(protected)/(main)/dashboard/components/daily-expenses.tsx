@@ -16,7 +16,6 @@ const DailyExpenseChart = dynamic(
 export default async function DailyExpenses() {
   const session = await getServerSession(authOptions);
   const profileId = session?.user.selectedProfile?.id;
-  // const { dashboardDateRange } = getUserPreferences();
   const cookieData = cookies().get("dashboard-range")?.value;
   const dashboardDateRange: DateRange = cookieData && JSON.parse(cookieData);
 

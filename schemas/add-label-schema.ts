@@ -1,12 +1,12 @@
 import { z } from "zod";
 
 export const addLabelSchema = z.object({
-  title: z.string().min(1, "Title must be at least 1 character long."),
-  colorHex: z.string().min(1, "Hex Color must be at least 1 character long."),
+  title: z.string().min(1, "Necessário informar um título."),
+  colorHex: z.string(),
 });
 export type AddLabelFormData = z.infer<typeof addLabelSchema>;
 
 export const addLabelsSchema = z.object({
-  labels: z.array(addLabelSchema),
+  labels: z.array(addLabelSchema).min(1, "Selecione pelo menos uma categoria."),
 });
 export type AddLabelsFormData = z.infer<typeof addLabelsSchema>;
