@@ -1,14 +1,26 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { useFormStatus } from "react-dom";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { parseAndCreateOrUpdateProfile } from "@/app/actions/profile";
-import { useState } from "react";
-import { useOnboarding } from "@/hooks/use-onboarding";
+import { addOrUpdateProfile } from "@/app/actions/profile";
 import { Profile } from "@prisma/client";
+import { LoadingButton } from "../loading-button";
+import { useForm } from "react-hook-form";
+import {
+  AddProfileFormData,
+  addProfileSchema,
+} from "@/schemas/add-profile-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useOnboarding } from "@/hooks/use-onboarding";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { useRouter } from "next/navigation";
 
 interface Props {
   data: Profile | null;
@@ -17,59 +29,50 @@ interface Props {
 export default function AddProfileOnboardingForm(
   props: Props & React.ComponentProps<"form">
 ) {
+  const router = useRouter();
   const { nextStep } = useOnboarding();
+  const form = useForm<AddProfileFormData>({
+    resolver: zodResolver(addProfileSchema),
+    defaultValues: { title: props.data ? props.data.title : "" },
+  });
 
-  const [title, setTitle] = useState(props.data?.title || "");
-  const [errors, setErrors] = useState<{
-    title?: string[] | undefined;
-  }>();
-
-  const onCreate = async (formData: FormData) => {
-    const res = await parseAndCreateOrUpdateProfile(formData, props.data?.id);
+  const onSubmit = async (values: AddProfileFormData) => {
+    await addOrUpdateProfile(values.title, props.data?.id);
     nextStep();
-    setErrors(res.errors);
+    router.push("/onboarding/label");
   };
 
   return (
-    <form
-      action={onCreate}
-      className={cn("grid items-start gap-5 h-full mt-10", props.className)}
-    >
-      <div className="grid gap-6 h-full">
-        <div className="flex flex-col gap-2 h-full">
-          <Label htmlFor="title">Perfil</Label>
-          <Input
-            autoComplete="off"
-            name="title"
-            type="text"
-            placeholder="Ex: Pessoal, Trabalho, Família..."
-            defaultValue={props.data?.title}
-            required
-          />
-          <small className="text-muted-foreground">
-            O nome pode ser alterado a qualquer momento.
-          </small>
-
-          {errors?.title?.map((error, i) => (
-            <p key={i} aria-live="polite">
-              {error}
-            </p>
-          ))}
-        </div>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="grid gap-6 h-full mt-12"
+      >
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Perfil</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Ex: Pessoal, Trabalho, Família..."
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                O nome pode ser alterado a qualquer momento.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="flex flex-row items-center justify-end">
-          <SubmitButton />
+          <LoadingButton isLoading={form.formState.isSubmitting}>
+            Continuar
+          </LoadingButton>
         </div>
-      </div>
-    </form>
-  );
-}
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button disabled={pending} type="submit">
-      {pending ? "Criando..." : "Continuar"}
-    </Button>
+      </form>
+    </Form>
   );
 }

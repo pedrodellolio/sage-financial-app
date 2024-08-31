@@ -3,20 +3,40 @@
 import { Button } from "@/components/ui/button";
 import SuggestionLabelList from "@/app/(protected)/onboarding/components/suggestion-label-list";
 import { useRouter } from "next/navigation";
-import { createLabelsFromSystem } from "@/app/actions/labels";
-import { useState } from "react";
-import { SystemLabel } from "@prisma/client";
+import { addLabelsFromSystem } from "@/app/actions/labels";
 import { useOnboarding } from "@/hooks/use-onboarding";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { LoadingButton } from "../loading-button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { AddLabelsFormData, addLabelsSchema } from "@/schemas/add-label-schema";
+import { AddLabelDTO } from "@/dto/types";
+import { Label, SystemLabel } from "@prisma/client";
 
-export default function AddLabelOnboardingForm() {
+interface Props {
+  data: Label[] | null;
+}
+
+export default function AddLabelOnboardingForm(props: Props) {
   const router = useRouter();
   const { nextStep, previousStep } = useOnboarding();
-  const [selected, setSelected] = useState<SystemLabel[]>([]);
+  const form = useForm<AddLabelsFormData>({
+    resolver: zodResolver(addLabelsSchema),
+    defaultValues: { labels: props.data ?? [] },
+  });
 
-  const handleAddLabels = async () => {
-    await createLabelsFromSystem(selected);
+  const onSubmit = async (values: AddLabelsFormData) => {
+    await addLabelsFromSystem(values.labels);
     nextStep();
-    router.replace("/onboarding/success");
+    router.push("/onboarding/success");
   };
 
   const handlePreviousStep = () => {
@@ -24,18 +44,66 @@ export default function AddLabelOnboardingForm() {
     router.back();
   };
 
+  const handleAddLabel = (label: SystemLabel) => {
+    const currentLabels = form.getValues("labels");
+
+    const isAlreadySelected = currentLabels.some(
+      (existingLabel) => existingLabel.title === label.title
+    );
+
+    if (isAlreadySelected) {
+      form.setValue(
+        "labels",
+        currentLabels.filter(
+          (existingLabel) => existingLabel.title !== label.title
+        )
+      );
+    } else {
+      form.setValue("labels", [
+        ...currentLabels,
+        { title: label.title, colorHex: label.colorHex } as AddLabelDTO,
+      ]);
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center gap-2 h-full">
-      <SuggestionLabelList selected={selected} setSelected={setSelected} />
-      <small className="text-center text-muted-foreground/80 mt-2">
-        É possível criar ou adicionar novas categorias a qualquer momento.
-      </small>
-      <div className="flex flex-row items-center justify-between mt-10 w-full">
-        <Button onClick={handlePreviousStep} type="button" variant={"outline"}>
-          Voltar
-        </Button>
-        <Button onClick={handleAddLabels}>Finalizar</Button>
-      </div>
-    </div>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="grid gap-6 h-full"
+      >
+        <FormField
+          control={form.control}
+          name="labels"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <SuggestionLabelList
+                  selected={field.value}
+                  onLabelClick={handleAddLabel}
+                />
+              </FormControl>
+              <FormDescription>
+                É possível criar ou adicionar novas categorias a qualquer
+                momento.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="flex flex-row items-center justify-between">
+          <Button
+            onClick={handlePreviousStep}
+            type="button"
+            variant={"outline"}
+          >
+            Voltar
+          </Button>
+          <LoadingButton isLoading={form.formState.isSubmitting}>
+            Finalizar
+          </LoadingButton>
+        </div>
+      </form>
+    </Form>
   );
 }

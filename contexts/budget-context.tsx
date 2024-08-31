@@ -30,7 +30,7 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
   const [period, setPeriod] = useState<[number, number]>(getCurrentPeriod());
   const [budget, setBudget] = useState<Budget | null>(null);
   const [goals, setGoals] = useState<BudgetGoal[]>([]);
-  console.log(goals);
+  // console.log(goals);
   useEffect(() => {
     const [month, year] = period;
     profileId &&

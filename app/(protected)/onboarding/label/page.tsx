@@ -1,8 +1,8 @@
+import { getLabelsFromFirstCreatedProfile } from "@/app/actions/labels";
 import AddLabelOnboardingForm from "@/components/forms/add-label-onboarding-form";
 
-type Props = {};
-
-export default function LabelStep({}: Props) {
+export default async function LabelStep() {
+  const labels = await getLabelsFromFirstCreatedProfile();
   return (
     <div className="flex flex-col items-center gap-24">
       <div className="flex flex-col justify-center items-center mt-14">
@@ -13,7 +13,7 @@ export default function LabelStep({}: Props) {
           Categorias ajudam a identificar movimentações realizadas por você
         </p>
         <div className="w-[28rem] h-[420px]">
-          <AddLabelOnboardingForm />
+          <AddLabelOnboardingForm data={labels} />
         </div>
       </div>
     </div>

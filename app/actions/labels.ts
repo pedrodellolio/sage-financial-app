@@ -1,14 +1,12 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { isAuthenticated } from "./user";
-import { SystemLabel } from "@prisma/client";
+import { Label } from "@prisma/client";
+import { AddLabelDTO } from "@/dto/types";
 
-export interface AddLabelDTO {
-  title: string;
-  colorHex: string;
-}
-
-export async function createLabelsFromSystem(systemLabels: SystemLabel[]) {
+export async function addLabelsFromSystem(
+  systemLabels: AddLabelDTO[]
+) {
   const user = await isAuthenticated();
   if (!user) throw new Error("Faça login para realizar essa ação");
   if (!user.selectedProfile) throw new Error("Perfil não selecionado");
@@ -61,6 +59,18 @@ export async function deleteLabel(labelId: string) {
       id: labelId,
     },
   });
+}
+
+export async function getLabelsFromFirstCreatedProfile(): Promise<
+  Label[] | null
+> {
+  const firstCreatedProfile = await prisma.profile.findFirst({
+    include: {
+      Label: true,
+    },
+  });
+
+  return firstCreatedProfile && firstCreatedProfile?.Label;
 }
 
 export async function hasAnyLabel() {

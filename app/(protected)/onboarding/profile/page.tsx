@@ -1,11 +1,8 @@
 import { getFirstProfile } from "@/app/actions/profile";
 import AddProfileOnboardingForm from "@/components/forms/add-profile-onboarding-form";
 
-type Props = {};
-
-export default async function ProfileStep({}: Props) {
+export default async function ProfileStep() {
   const profile = await getFirstProfile();
-
   return (
     <div className="flex flex-col items-center gap-24">
       <div className="flex flex-col justify-center items-center mt-14">

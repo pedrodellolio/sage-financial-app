@@ -55,35 +55,16 @@ export async function deleteProfile(profileId: string) {
   });
 }
 
-export async function parseAndCreateOrUpdateProfile(
-  formData: FormData,
+export async function addOrUpdateProfile(
+  title: string,
   profileId?: string
 ) {
-  const validatedFields = addProfileSchema.safeParse(
-    Object.fromEntries(formData)
-  );
-
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-    };
-  }
-
   try {
-    const profile = await createOrUpdateProfile(
-      { title: validatedFields.data.title },
-      profileId
-    );
+    const profile = await createOrUpdateProfile({ title: title }, profileId);
     await updateSelectedProfile(profile.id);
   } catch (err) {
     console.error(err);
-    return {
-      errors: {
-        title: ["Ocorreu um erro ao criar o perfil"],
-      },
-    };
   }
-  redirect("/onboarding/label");
 }
 
 export async function hasAnyProfile() {

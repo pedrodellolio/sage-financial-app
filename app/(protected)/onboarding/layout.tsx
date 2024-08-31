@@ -12,8 +12,8 @@ export default async function ProtectedLayout({
 }) {
   const hasProfile = await hasAnyProfile();
   const hasLabel = await hasAnyLabel();
-
   if (hasProfile && hasLabel) return redirect("/");
+
   return (
     <OnboardingWrapper>
       <OnboardingHeader />
