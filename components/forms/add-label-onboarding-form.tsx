@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import SuggestionLabelList from "@/app/(protected)/onboarding/components/suggestion-label-list";
 import { useRouter } from "next/navigation";
 import { addLabelsFromSystem } from "@/app/actions/labels";
 import { useOnboarding } from "@/hooks/use-onboarding";
@@ -21,6 +20,7 @@ import { AddLabelsFormData, addLabelsSchema } from "@/schemas/add-label-schema";
 import { AddLabelDTO } from "@/dto/types";
 import { Label, SystemLabel } from "@prisma/client";
 import { toast } from "sonner";
+import SuggestionLabelList from "../onboarding/suggestion-label-list";
 
 interface Props {
   data: Label[] | null;

@@ -1,12 +1,12 @@
 import { Separator } from "@/components/ui/separator";
 import { Metadata } from "next";
-import { ProfilesDataTable } from "./components/data-table/data-table";
-import { columns } from "./components/data-table/columns";
 import { getServerSession } from "next-auth";
-import { Profile } from "@/dto/types";
 import { getProfiles } from "@/app/actions/profile";
 import { authOptions } from "@/lib/auth-options";
 import AddProfileDialog from "@/components/dialogs/add-profile-dialog";
+import { Profile } from "@prisma/client";
+import { ProfilesDataTable } from "@/components/settings/profiles/data-table/data-table";
+import { columns } from "@/components/settings/profiles/data-table/columns";
 
 export const metadata: Metadata = {
   title: "Preferências: Perfis",
@@ -24,7 +24,7 @@ export default async function Profiles({
 
   let profiles: Profile[] = [];
   if (userId) {
-    profiles = await getProfiles(userId);
+    profiles = await getProfiles();
   }
 
   return (

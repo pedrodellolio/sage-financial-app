@@ -1,6 +1,6 @@
 import { Separator } from "@/components/ui/separator";
 import { Metadata } from "next";
-import { AccountForm } from "./components/account-form";
+import { AccountForm } from "../../../../../components/forms/account-form";
 
 export const metadata: Metadata = {
   title: "Preferências: Conta",

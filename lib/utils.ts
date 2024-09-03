@@ -1,4 +1,3 @@
-import { File, MappedTransaction, Mapping, UploadedFile } from "@/dto/types";
 import { TransactionType } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
 import { getMonth, getYear } from "date-fns";
@@ -86,34 +85,34 @@ export function formatBytes(bytes: number) {
   return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
 }
 
-export function fileDataToTransactions(
-  fileId: string,
-  file: UploadedFile
-): any[] {
-  let transactions: any[] = [];
-  file.data.map((item) => {
-    const mapped: Partial<MappedTransaction> = {};
-    file.mapping.forEach((map) => {
-      mapped[map.key] = item[map.value];
-    });
+// export function fileDataToTransactions(
+//   fileId: string,
+//   file: UploadedFile
+// ): any[] {
+//   let transactions: any[] = [];
+//   file.data.map((item) => {
+//     const mapped: Partial<MappedTransaction> = {};
+//     file.mapping.forEach((map) => {
+//       mapped[map.key] = item[map.value];
+//     });
 
-    const { valueBrl, type, error } = currencyStringToTransactionValue(
-      mapped.valueBrl ?? "R$0,00"
-    );
-    transactions.push({
-      title: mapped.title ?? `Movimentação de ${mapped.occurredAt}`,
-      occurredAt:
-        mapped.occurredAt && isValidDate(mapped.occurredAt)
-          ? convertStringToDate(mapped.occurredAt)
-          : new Date(),
-      valueBrl: valueBrl,
-      type: type,
-      fileId,
-    });
-  });
+//     const { valueBrl, type, error } = currencyStringToTransactionValue(
+//       mapped.valueBrl ?? "R$0,00"
+//     );
+//     transactions.push({
+//       title: mapped.title ?? `Movimentação de ${mapped.occurredAt}`,
+//       occurredAt:
+//         mapped.occurredAt && isValidDate(mapped.occurredAt)
+//           ? convertStringToDate(mapped.occurredAt)
+//           : new Date(),
+//       valueBrl: valueBrl,
+//       type: type,
+//       fileId,
+//     });
+//   });
 
-  return transactions;
-}
+//   return transactions;
+// }
 
 export function getCurrentPeriod(): [number, number] {
   const currentDate = new Date();

@@ -2,41 +2,35 @@
 
 import { DataGrid, gridClasses } from "@mui/x-data-grid";
 import { columns } from "./columns";
-import { Transaction } from "@/dto/types";
 import { ptBR } from "@mui/x-data-grid/locales";
 import { DataTableToolbar } from "./data-table-toolbar";
-import NoRowsOverlay from "./no-rows-overlay";
+import { Transaction } from "@prisma/client";
+import { Checkbox, checkboxClasses } from "@mui/material";
 
 interface DataTableProps {
   data: Transaction[];
-  loading: boolean;
 }
 
-export function TransactionsDataTable({ data, loading }: DataTableProps) {
+export function TransactionsDataTable({ data }: DataTableProps) {
   return (
-    <div className="space-y-4">
+    <div>
       <DataTableToolbar />
-      <div className={`rounded-md ${data.length === 0 && "h-[500px]"}`}>
+      <div>
         <DataGrid
-          loading={loading}
           rows={data}
           columns={columns}
           localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 20,
-              },
-            },
-          }}
-          pageSizeOptions={[5]}
-          checkboxSelection
           disableRowSelectionOnClick
           showCellVerticalBorder
-          columnHeaderHeight={45}
+          columnHeaderHeight={35}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 15 } },
+          }}
+          // pageSizeOptions={[5, 10, 25]}
+          // checkboxSelection
           rowHeight={45}
           sx={{
-            border: "1",
+            border: "none",
             [`& .${gridClasses.cell}:focus, & .${gridClasses.cell}:focus-within`]:
               {
                 outlineColor: "hsl(var(--primary))",
@@ -64,7 +58,16 @@ export function TransactionsDataTable({ data, loading }: DataTableProps) {
             },
           }}
           slots={{
-            noRowsOverlay: NoRowsOverlay,
+            baseCheckbox: (props) => (
+              <Checkbox
+                {...props}
+                sx={{
+                  [`&, &.${checkboxClasses.checked}`]: {
+                    color: "hsl(var(--primary))",
+                  },
+                }}
+              />
+            ),
           }}
         />
       </div>

@@ -1,12 +1,5 @@
 "use server";
 
-import {
-  Label,
-  MappedTransaction,
-  Transaction,
-  TransactionType,
-} from "@/dto/types";
-import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { getWalletByMonthAndYear, updateOrCreateWallet } from "./wallet";
 import {
   convertStringToDate,
@@ -14,6 +7,17 @@ import {
   isValidDate,
 } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
+import { ensureAuthenticatedUser } from "./account";
+import { FetchingDataError, ProfileRequiredError } from "@/lib/exceptions";
+import { Label, Prisma, TransactionType } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+
+export interface MappedTransaction {
+  fileId: string;
+  title: string;
+  valueBrl: string;
+  occurredAt: string;
+}
 
 export interface AddTransactionDTO {
   title: string;
@@ -23,29 +27,23 @@ export interface AddTransactionDTO {
   labels: Label[];
 }
 
-export async function getTransactions(
-  profileId: string,
-  startDate?: Date,
-  endDate?: Date
-) {
-  noStore;
-  const transactions = await prisma.transaction.findMany({
-    include: { labels: true },
-    where: {
-      wallet: {
-        profileId: profileId,
-      },
-      occurredAt: { lte: endDate, gte: startDate },
-    },
-  });
+export async function getTransactions(startDate?: Date, endDate?: Date) {
+  const user = await ensureAuthenticatedUser();
+  if (!user.selectedProfile) throw new ProfileRequiredError();
 
-  return transactions.map((t) => {
-    return {
-      ...t,
-      valueBrl: t.valueBrl.toNumber(),
-      type: t.type as TransactionType,
-    } as Transaction;
-  });
+  try {
+    return await prisma.transaction.findMany({
+      include: { labels: true },
+      where: {
+        wallet: {
+          profileId: user.selectedProfile.id,
+        },
+        occurredAt: { lte: endDate, gte: startDate },
+      },
+    });
+  } catch {
+    throw new FetchingDataError();
+  }
 }
 
 export async function deleteTransaction(id?: string) {

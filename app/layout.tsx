@@ -6,6 +6,7 @@ import { BudgetWrapper } from "@/components/wrappers/budget-wrapper";
 import { UserWrapper } from "@/components/wrappers/user-wrapper";
 import { DashboardWrapper } from "@/components/wrappers/dashboard-wrapper";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,10 +25,17 @@ export default function RootLayout({
       <UserWrapper>
         <DashboardWrapper>
           <BudgetWrapper>
-            <html lang="pt-br">
+            <html lang="pt-br dark">
               <body className={`${inter.className}`}>
-                {children}
-                <Toaster richColors />
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="system"
+                  enableSystem
+                  disableTransitionOnChange
+                >
+                  {children}
+                  <Toaster richColors />
+                </ThemeProvider>
               </body>
             </html>
           </BudgetWrapper>

@@ -1,6 +1,6 @@
-import { TransactionType, Wallet } from "@/dto/types";
 import { prisma } from "@/lib/prisma";
 import { AddTransactionDTO } from "./transactions";
+import { TransactionType, Wallet } from "@prisma/client";
 
 export async function getWalletByMonthAndYear(
   profileId: string,
@@ -18,8 +18,8 @@ export async function getWalletByMonthAndYear(
     wallet &&
     ({
       ...wallet,
-      expensesBrl: wallet?.expensesBrl.toNumber(),
-      incomeBrl: wallet?.incomeBrl.toNumber(),
+      expensesBrl: wallet?.expensesBrl,
+      incomeBrl: wallet?.incomeBrl,
     } as Wallet)
   );
 }
@@ -36,8 +36,8 @@ export async function updateOrCreateWallet(
   let income = !isExpense ? valueBrl : 0;
 
   if (w) {
-    expenses += w.expensesBrl;
-    income += w.incomeBrl;
+    expenses += w.expensesBrl.toNumber();
+    income += w.incomeBrl.toNumber();
   }
 
   if (!w) {

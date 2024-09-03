@@ -1,6 +1,6 @@
 import { OnboardingWrapper } from "@/components/wrappers/onboarding-wrapper";
-import OnboardingHeader from "./components/header";
-import OnboardingSteps from "./components/steps";
+import OnboardingHeader from "../../../components/onboarding/header";
+import OnboardingSteps from "../../../components/onboarding/steps";
 import { redirect } from "next/navigation";
 import { hasAnyLabel } from "@/app/actions/labels";
 import { hasAnyProfile } from "@/app/actions/profile";

@@ -4,7 +4,8 @@ import { capitalizeText, formatDate } from "@/lib/utils";
 import { ApexOptions } from "apexcharts";
 import { GeistSans } from "geist/font/sans";
 import Chart from "react-apexcharts";
-import { LabelSummary } from "../../actions/charts";
+import { LabelSummary } from "../../../app/actions/charts";
+import ChartPlaceholder from "../chart-placeholder";
 
 interface Props {
   data: LabelSummary[];
@@ -33,7 +34,8 @@ export default function LabelSummaryChart(props: Props) {
   };
 
   const series = props.data.map((t) => t.totalValue);
-  return (
+
+  return props.data.length > 0 ? (
     <Chart
       type="pie"
       width="100%"
@@ -41,5 +43,7 @@ export default function LabelSummaryChart(props: Props) {
       options={options}
       series={series}
     />
+  ) : (
+    <ChartPlaceholder />
   );
 }

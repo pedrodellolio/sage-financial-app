@@ -1,10 +1,11 @@
 "use client";
 
-import { Wallet } from "@/dto/types";
 import { formatCurrency } from "@/lib/utils";
 import { ApexOptions } from "apexcharts";
 import { GeistSans } from "geist/font/sans";
 import Chart from "react-apexcharts";
+import ChartPlaceholder from "../chart-placeholder";
+import { Wallet } from "@prisma/client";
 
 interface Props {
   data: Wallet[];
@@ -79,16 +80,16 @@ export default function MonthlyBalanceChart(props: Props) {
     {
       name: "Despesas",
       type: "column",
-      data: props.data.map((w) => w.expensesBrl),
+      data: props.data.map((w) => w.expensesBrl.toNumber()),
     },
     {
       name: "Receitas",
       type: "column",
-      data: props.data.map((w) => w.incomeBrl),
+      data: props.data.map((w) => w.incomeBrl.toNumber()),
     },
   ];
 
-  return (
+  return props.data.length > 0 ? (
     <Chart
       type="bar"
       width="100%"
@@ -96,5 +97,7 @@ export default function MonthlyBalanceChart(props: Props) {
       options={options}
       series={series}
     />
+  ) : (
+    <ChartPlaceholder />
   );
 }

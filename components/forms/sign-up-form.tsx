@@ -7,7 +7,7 @@ import { signIn } from "@/app/actions/account";
 import { useFormState, useFormStatus } from "react-dom";
 import { Label } from "../ui/label";
 import Link from "next/link";
-import AuthGoogleButton from "@/app/(auth)/sign-in/auth-google-button";
+import AuthGoogleButton from "@/components/auth-google-button";
 
 const initialState = {
   message: "",

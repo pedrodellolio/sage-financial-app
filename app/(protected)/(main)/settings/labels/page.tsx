@@ -1,7 +1,7 @@
 import { Separator } from "@/components/ui/separator";
 import { Metadata } from "next";
-import { LabelsDataTable } from "./components/data-table/data-table";
-import { columns } from "./components/data-table/columns";
+import { LabelsDataTable } from "../../../../../components/settings/labels/data-table/data-table";
+import { columns } from "../../../../../components/settings/labels/data-table/columns";
 import { getLabels } from "@/app/actions/labels";
 import AddLabelDialog from "@/components/dialogs/add-label-dialog";
 import { getServerSession } from "next-auth";

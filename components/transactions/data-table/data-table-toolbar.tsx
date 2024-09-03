@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table } from "@tanstack/react-table";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { DataTableViewOptions } from "./data-table-view-options";
+import { AdornedInput } from "@/components/adorned-input";
 
 interface DataTableToolbarProps<TData> {
   // table: Table<TData>;
@@ -16,22 +17,22 @@ interface DataTableToolbarProps<TData> {
   // }[];
 }
 
-export function DataTableToolbar<TData>({
-  // labels,
-}: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({}: // labels,
+DataTableToolbarProps<TData>) {
   // const isFiltered = table.getState().columnFilters.length > 0;
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between border-b pb-2 px-3">
       <div className="flex flex-1 items-center space-x-2">
-        {/* <Input
+        <AdornedInput
+          adornment={<Search className="h-4 w-4" />}
           placeholder="Buscar movimentações..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
-          }
-          className="h-8 w-[150px] lg:w-[250px]"
+          className="h-8 w-[150px] lg:w-[550px] border-none focus-visible:ring-transparent"
+          // value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+          // onChange={(event) =>
+          //   table.getColumn("title")?.setFilterValue(event.target.value)
+          // }
         />
-        {table.getColumn("labels") && (
+        {/* {table.getColumn("labels") && (
           <DataTableFacetedFilter
             column={table.getColumn("labels")}
             title="Label"

@@ -26,13 +26,13 @@ export async function calculateSummary(
   endDate?: Date
 ) {
   try {
-    const transactions = await getTransactions(profileId, startDate, endDate);
+    const transactions = await getTransactions(startDate, endDate);
     const totalExpenses = transactions
       ?.filter((t) => t.type === TransactionType.EXPENSE)
-      .reduce((acc, cur) => acc + cur.valueBrl, 0);
+      .reduce((acc, cur) => acc + cur.valueBrl.toNumber(), 0);
     const totalIncome = transactions
       ?.filter((t) => t.type === TransactionType.INCOME)
-      .reduce((acc, cur) => acc + cur.valueBrl, 0);
+      .reduce((acc, cur) => acc + cur.valueBrl.toNumber(), 0);
 
     return { income: totalIncome ?? 0, expenses: totalExpenses ?? 0 };
   } catch (error) {
@@ -42,14 +42,13 @@ export async function calculateSummary(
 }
 
 export async function getPeriodIncome(
-  profileId: string,
   startDate?: Date,
   endDate?: Date
 ) {
-  const transactions = await getTransactions(profileId, startDate, endDate);
+  const transactions = await getTransactions(startDate, endDate);
   return transactions
     ?.filter((t) => t.type === TransactionType.INCOME)
-    .reduce((acc, cur) => acc + cur.valueBrl, 0);
+    .reduce((acc, cur) => acc + cur.valueBrl.toNumber(), 0);
 }
 
 export async function getDailyExpenses(
@@ -57,7 +56,9 @@ export async function getDailyExpenses(
   startDate: Date,
   endDate: Date
 ): Promise<Expense[]> {
-  const transactions = await getTransactions(profileId, startDate, endDate);
+  // await new Promise((resolve) => setTimeout(resolve, 3000));
+  
+  const transactions = await getTransactions(startDate, endDate);
 
   const dateList: Date[] = [];
   let currentDate = new Date(startDate);
@@ -72,7 +73,7 @@ export async function getDailyExpenses(
     );
     return {
       occurredAt: date,
-      valueBrl: transaction ? transaction.valueBrl : 0,
+      valueBrl: transaction ? transaction.valueBrl.toNumber() : 0,
     };
   });
 }
@@ -82,7 +83,7 @@ export async function getLabelSummary(
   startDate?: Date,
   endDate?: Date
 ): Promise<LabelSummary[]> {
-  const transactions = await getTransactions(profileId, startDate, endDate);
+  const transactions = await getTransactions(startDate, endDate);
   const labelMap = new Map<string, number>();
 
   transactions.forEach((transaction) => {
@@ -90,10 +91,10 @@ export async function getLabelSummary(
       if (labelMap.has(label.title)) {
         labelMap.set(
           label.title,
-          labelMap.get(label.title)! + transaction.valueBrl
+          labelMap.get(label.title)! + transaction.valueBrl.toNumber()
         );
       } else {
-        labelMap.set(label.title, transaction.valueBrl);
+        labelMap.set(label.title, transaction.valueBrl.toNumber());
       }
     });
   });
@@ -119,8 +120,8 @@ export async function getMonthlyTrend(profileId: string): Promise<Wallet[]> {
   return wallet.map((w) => {
     return {
       ...w,
-      expensesBrl: w.expensesBrl.toNumber(),
-      incomeBrl: w.incomeBrl.toNumber(),
+      expensesBrl: w.expensesBrl,
+      incomeBrl: w.incomeBrl,
     };
   });
 }

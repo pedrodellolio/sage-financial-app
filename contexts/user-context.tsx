@@ -32,7 +32,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       "profile",
       JSON.stringify({ id: profile?.id, title: profile?.title })
     );
-  }, [profile]);
+  }, [localStorage, profile]);
 
   return (
     <UserContext.Provider

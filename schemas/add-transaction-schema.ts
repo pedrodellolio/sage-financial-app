@@ -1,4 +1,4 @@
-import { Label, TransactionType } from "@/dto/types";
+import { TransactionType } from "@prisma/client";
 import { z } from "zod";
 
 export const addTransactionSchema = z.object({

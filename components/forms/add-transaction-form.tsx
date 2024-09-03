@@ -21,7 +21,6 @@ import {
   FormMessage,
 } from "../ui/form";
 import { useForm } from "react-hook-form";
-import { Label, TransactionType } from "@/dto/types";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { CalendarIcon, Check, ChevronsUpDown, Text } from "lucide-react";
@@ -42,6 +41,7 @@ import { useState } from "react";
 import { AdornedInput } from "../adorned-input";
 import { useSession } from "next-auth/react";
 import { PopoverClose } from "@radix-ui/react-popover";
+import { Label, TransactionType } from "@prisma/client";
 
 interface Props {
   labels: Label[];

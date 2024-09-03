@@ -3,6 +3,7 @@
 import { DateRangePicker } from "@/components/date-range-picker";
 import { DateRange } from "react-day-picker";
 import Cookies from "js-cookie";
+import { Button } from "../ui/button";
 
 export function DashboardOptionsRow() {
   const handleDateRangeSelect = (range: DateRange | undefined) => {
@@ -12,7 +13,7 @@ export function DashboardOptionsRow() {
   return (
     <div className="flex items-center space-x-2">
       <DateRangePicker handleSelect={handleDateRangeSelect} />
-      {/* <Button>Criar transação</Button> */}
+      <Button size={"sm"}>Criar transação</Button>
     </div>
   );
 }

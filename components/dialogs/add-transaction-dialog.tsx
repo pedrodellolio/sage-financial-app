@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/drawer";
 import AddTransactionForm from "../forms/add-transaction-form";
 import { useRouter } from "next/navigation";
-import { Label } from "@/dto/types";
+import { Label } from "@prisma/client";
 
 interface Props {
   open: boolean;

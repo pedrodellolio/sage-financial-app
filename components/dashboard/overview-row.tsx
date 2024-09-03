@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
-import { Summary, calculateSummary } from "../actions/charts";
+import { Summary, calculateSummary } from "../../app/actions/charts";
 import { DateRange } from "react-day-picker";
 import { cookies } from "next/headers";
 import { getUserPreferences } from "@/lib/user-preferences";

@@ -6,6 +6,19 @@ import { AddLabelDTO } from "@/dto/types";
 import { ensureAuthenticatedUser } from "./account";
 import { FetchingDataError, ProfileRequiredError } from "@/lib/exceptions";
 
+export async function getLabels() {
+  const user = await ensureAuthenticatedUser();
+  if (!user.selectedProfile) throw new ProfileRequiredError();
+
+  try {
+    return await prisma.label.findMany({
+      where: { profileId: user.selectedProfile.id },
+    });
+  } catch {
+    throw new FetchingDataError();
+  }
+}
+
 export async function addLabelsFromSystem(systemLabels: AddLabelDTO[]) {
   const user = await ensureAuthenticatedUser();
   if (!user.selectedProfile) throw new ProfileRequiredError();

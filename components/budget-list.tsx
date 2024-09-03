@@ -4,11 +4,11 @@ import React, { useEffect, useState } from "react";
 import MonthChanger from "./month-changer";
 import { formatCurrency } from "@/lib/utils";
 import { createBudget, getBudgetByPeriod } from "@/app/actions/budget";
-import BudgetCard from "@/app/(protected)/budget/components/budget-card";
 import { useBudget } from "@/hooks/use-budget";
-import { Budget, BudgetGoal } from "@/dto/types";
 import { getBudgetGoalsByPeriod } from "@/app/actions/budgetGoal";
 import { useSession } from "next-auth/react";
+import { Budget } from "@prisma/client";
+import BudgetCard from "./budget/budget-card";
 
 type Props = {
   monthIncome: number;

@@ -3,13 +3,9 @@ import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import AddBudgetDialog from "@/components/dialogs/add-budget-dialog";
 import { getLabels } from "@/app/actions/labels";
-import { getPeriodIncome } from "../dashboard/actions/charts";
-import { Label } from "@/dto/types";
-import { getCurrentPeriod } from "@/lib/utils";
+import { getPeriodIncome } from "../../../actions/charts";
 import { endOfMonth, startOfMonth } from "date-fns";
-import { getBudgetByPeriod } from "@/app/actions/budget";
 import BudgetList from "@/components/budget-list";
-import { Budget } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "Planejamento",
@@ -22,22 +18,14 @@ export default async function BudgetPage({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const session = await getServerSession(authOptions);
-  const profileId = session?.user.selectedProfile?.id;
+  const profileId: string = session?.user.selectedProfile?.id;
 
   const isAddBudgetDialogOpen = !!searchParams["b"];
 
-  let budget: Budget | null = null;
-  let labels: Label[] = [];
-  let income: number = 0;
-  if (profileId) {
-    labels = await getLabels(profileId);
-    const today = new Date();
-    income = await getPeriodIncome(
-      profileId,
-      startOfMonth(today),
-      endOfMonth(today)
-    );
-  }
+  // let budget: Budget | null = null;
+  const labels = await getLabels();
+  const today = new Date();
+  const income = await getPeriodIncome(startOfMonth(today), endOfMonth(today));
 
   return (
     <div className="w-full">

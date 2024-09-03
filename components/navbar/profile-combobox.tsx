@@ -17,9 +17,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useEffect, useState } from "react";
-import { Profile } from "@/dto/types";
 import axios from "axios";
 import { useUser } from "@/hooks/use-user";
+import { Profile } from "@prisma/client";
 
 interface Props {
   handleSelection?: (profile: Profile) => Promise<void>;
@@ -27,7 +27,6 @@ interface Props {
 
 export function ProfileCombobox(props: Props) {
   const { profile, setProfile } = useUser();
-  console.log(profile);
   const [data, setData] = useState<Profile[]>([]);
   const [open, setOpen] = useState(false);
 
@@ -60,7 +59,8 @@ export function ProfileCombobox(props: Props) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[160px] h-9 justify-between"
+          size={"sm"}
+          className="w-full justify-between"
         >
           {profile ? capitalizeText(profile.title) : "Selecione..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
