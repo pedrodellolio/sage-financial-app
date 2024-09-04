@@ -24,7 +24,7 @@ interface Props {
 
 export function TopNav({ isCollapsed }: Props) {
   return (
-    <nav className="flex flex-row items-center justify-between w-full border-b px-6 py-3">
+    <nav className="flex flex-row items-center justify-between w-full border-b px-6 py-2">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

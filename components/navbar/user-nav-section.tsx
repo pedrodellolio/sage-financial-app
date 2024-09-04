@@ -14,7 +14,6 @@ export default async function UserNavSection() {
   return (
     <div className="flex flex-row items-center gap-4 px-1">
       <ProfileCombobox handleSelection={handleSelectProfile} />
-      {/* <UserDropdown /> */}
     </div>
   );
 }

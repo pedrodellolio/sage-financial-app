@@ -3,7 +3,8 @@ import { getTransactions } from "@/app/actions/transactions";
 import AddTransactionDialog from "@/components/dialogs/add-transaction-dialog";
 import { getLabels } from "@/app/actions/labels";
 import { endOfMonth, startOfMonth } from "date-fns";
-import { TransactionsDataTable } from "@/components/transactions/data-table/data-table";
+import { columns } from "@/components/transactions/data-table/columns";
+import { DataTable } from "@/components/data-table";
 
 export const metadata: Metadata = {
   title: "Movimentações",
@@ -27,7 +28,12 @@ export default async function Transactions({
 
   return (
     <div>
-      <TransactionsDataTable data={transactions} />
+      <DataTable
+        columns={columns}
+        data={transactions}
+        showFilterRow
+        showPagination
+      />
       <AddTransactionDialog labels={labels} open={isAddTransactionDialogOpen} />
       {/* <ImportFilesDialog open={isImportFilesDialogOpen} /> */}
     </div>

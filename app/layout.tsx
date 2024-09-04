@@ -7,6 +7,8 @@ import { UserWrapper } from "@/components/wrappers/user-wrapper";
 import { DashboardWrapper } from "@/components/wrappers/dashboard-wrapper";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "next-themes";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
+import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
 
 const inter = Inter({ subsets: ["latin"] });
 

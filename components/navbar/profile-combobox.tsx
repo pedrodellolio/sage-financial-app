@@ -59,7 +59,7 @@ export function ProfileCombobox(props: Props) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          size={"sm"}
+          size={"default"}
           className="w-full justify-between"
         >
           {profile ? capitalizeText(profile.title) : "Selecione..."}
