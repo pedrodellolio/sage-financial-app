@@ -1,10 +1,21 @@
 import { Metadata } from "next";
-import { getTransactions } from "@/app/actions/transactions";
-import AddTransactionDialog from "@/components/dialogs/add-transaction-dialog";
+import {
+  getTransactions,
+  getTransactionsUniqueDate,
+} from "@/app/actions/transactions";
 import { getLabels } from "@/app/actions/labels";
-import { endOfMonth, startOfMonth } from "date-fns";
 import { columns } from "@/components/transactions/data-table/columns";
-import { DataTable } from "@/components/data-table";
+import { capitalizeText, getCurrentPeriod, parseNumber } from "@/lib/utils";
+import { startOfMonth, endOfMonth } from "date-fns";
+import { MONTHS } from "@/lib/date-utils";
+import {
+  FilterComboBox,
+  ItemsList,
+  MonthsList,
+} from "@/components/combo-box/filter-combo-box";
+import { DataTable } from "@/components/data-table/data-table";
+import LabelFilterComboBox from "@/components/combo-box/label-filter-combo-box";
+import ImportFilesDialog from "@/components/dialogs/import-files-dialog";
 
 export const metadata: Metadata = {
   title: "Movimentações",
@@ -16,26 +27,62 @@ export default async function Transactions({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const isAddTransactionDialogOpen = !!searchParams["t"];
-  const isImportFilesDialogOpen = !!searchParams["i"];
+  // const isImportFilesDialogOpen = !!searchParams["i"];
+  const [currMonth, currYear] = getCurrentPeriod();
+  const filteredYear =
+    parseNumber(searchParams["year"]?.toString()) ?? currYear;
+  const filteredMonth =
+    parseNumber(searchParams["month"]?.toString()) ?? currMonth;
+  const filteredLabelsTitle = searchParams["labels"]?.toString();
+  const currDate = new Date(filteredYear, filteredMonth - 1, 1);
+  const startDate = startOfMonth(currDate);
+  const endDate = endOfMonth(currDate);
 
-  const today = new Date();
-  const labels = await getLabels();
+  const { years } = await getTransactionsUniqueDate();
   const transactions = await getTransactions(
-    startOfMonth(today),
-    endOfMonth(today)
+    startDate,
+    endDate,
+    filteredLabelsTitle?.split(",")
   );
+  const labels = await getLabels();
 
   return (
     <div>
       <DataTable
         columns={columns}
+        labels={labels}
         data={transactions}
+        headerContent={
+          <>
+            <FilterComboBox
+              width={130}
+              placeholder="Mês"
+              data={MONTHS.map((m) => capitalizeText(m))}
+              queryKey="month"
+              selected={capitalizeText(MONTHS[filteredMonth - 1])}
+              ItemsListComponent={MonthsList}
+            />
+            <FilterComboBox
+              width={120}
+              placeholder="Ano"
+              data={years.sort()}
+              queryKey="year"
+              selected={filteredYear.toString()}
+              ItemsListComponent={ItemsList}
+            />
+            <LabelFilterComboBox
+              data={labels}
+              selected={labels.find(
+                (l) => l.title === filteredLabelsTitle?.split(",")[0]
+              )}
+              queryKey="labels"
+            />
+          </>
+        }
         showFilterRow
         showPagination
       />
-      <AddTransactionDialog labels={labels} open={isAddTransactionDialogOpen} />
-      {/* <ImportFilesDialog open={isImportFilesDialogOpen} /> */}
+      <ImportFilesDialog />
     </div>
   );
 }

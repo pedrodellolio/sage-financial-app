@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function capitalizeText(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  return value && value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
 
 export function formatCurrency(value: string | number) {
@@ -119,4 +119,15 @@ export function getCurrentPeriod(): [number, number] {
   const currentMonth = getMonth(currentDate) + 1;
   const currentYear = getYear(currentDate);
   return [currentMonth, currentYear];
+}
+
+export function isNumber(value?: string) {
+  const regex = /^-?\d+(\.\d+)?$/;
+  if (!value) return false;
+  return regex.test(value);
+}
+
+export function parseNumber(input?: string): number | undefined {
+  const parsed = Number(input); // Try to parse the input as a number
+  return isNaN(parsed) ? undefined : parsed; // Return undefined if parsing fails
 }

@@ -28,8 +28,8 @@ export default async function BudgetPage({
   const income = await getPeriodIncome(startOfMonth(today), endOfMonth(today));
 
   return (
-    <div className="w-full">
-      <h2 className="text-3xl font-bold tracking-tight mb-4">Planejamento</h2>
+    <div className="w-full px-4">
+      {/* <h2 className="text-3xl font-bold tracking-tight mb-4">Planejamento</h2> */}
       <BudgetList monthIncome={income} />
       <AddBudgetDialog labels={labels} open={isAddBudgetDialogOpen} />
     </div>

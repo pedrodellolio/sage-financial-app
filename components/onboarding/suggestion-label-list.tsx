@@ -20,7 +20,6 @@ export default function SuggestionLabelList({ onLabelClick, selected }: Props) {
     });
   }, []);
 
-  console.log(selected);
   return (
     <div className="grid grid-cols-3 gap-4 mt-10">
       {systemLabels.length > 0 ? (

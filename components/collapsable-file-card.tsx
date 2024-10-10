@@ -16,7 +16,6 @@ import {
 import { useEffect, useState } from "react";
 import { formatBytes } from "@/lib/utils";
 import { Card, CardContent } from "./ui/card";
-import { columnsAlias } from "@/app/(protected)/transactions/components/data-table/columns";
 import { Combobox } from "./combobox";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -25,12 +24,12 @@ import {
 } from "@/schemas/file-mapping-schema";
 import { useForm } from "react-hook-form";
 import { Form, FormField } from "./ui/form";
-import { UploadedFile } from "@/dto/types";
-import { Mapping } from "./dialogs/import-files-dialog";
 
 interface Props {
-  file: UploadedFile;
-  handleMappingChange: (value: Mapping[]) => void;
+  // file: UploadedFile;
+  file: any;
+  // handleMappingChange: (value: Mapping[]) => void;
+  handleMappingChange: (value: any[]) => void;
 }
 
 export function CollapsibleFileCard({ file, handleMappingChange }: Props) {
@@ -39,12 +38,12 @@ export function CollapsibleFileCard({ file, handleMappingChange }: Props) {
   const form = useForm<FileMappingFormData>({
     resolver: zodResolver(fileMappingSchema),
     defaultValues: {
-      mapping: columnsAlias.map((c) => {
-        return {
-          key: c as "title" | "occurredAt" | "valueBrl",
-          value: "",
-        };
-      }),
+      // mapping: columnsAlias.map((c) => {
+      //   return {
+      //     key: c as "title" | "occurredAt" | "valueBrl",
+      //     value: "",
+      //   };
+      // }),
     },
   });
 
@@ -94,7 +93,7 @@ export function CollapsibleFileCard({ file, handleMappingChange }: Props) {
                 Coluna no seu arquivo
               </p>
             </div>
-            <Form {...form}>
+            {/* <Form {...form}>
               {columnsAlias.map((_, i) => (
                 <div key={i} className="flex flex-row items-center gap-6 mt-2">
                   <FormField
@@ -125,7 +124,7 @@ export function CollapsibleFileCard({ file, handleMappingChange }: Props) {
                   />
                 </div>
               ))}
-            </Form>
+            </Form> */}
           </CollapsibleContent>
         </CardContent>
       </Card>

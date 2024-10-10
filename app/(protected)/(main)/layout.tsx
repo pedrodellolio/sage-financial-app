@@ -6,6 +6,7 @@ import { SideNav } from "@/components/side-nav";
 import { TopNav } from "@/components/top-nav";
 import { Separator } from "@/components/ui/separator";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ImportTransactionsWrapper } from "@/components/wrappers/import-transactions-wrapper";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -38,7 +39,9 @@ export default async function ProtectedLayout({
       </div>
       <div className="flex flex-col w-full h-full border rounded-md dark:bg-foreground/5 bg-background">
         <TopNav isCollapsed={defaultCollapsed} />
-        <main className="flex-grow overflow-auto">{children}</main>
+        <ImportTransactionsWrapper>
+          <main className="flex-grow overflow-auto">{children}</main>
+        </ImportTransactionsWrapper>
       </div>
     </div>
   );

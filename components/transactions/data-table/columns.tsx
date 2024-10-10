@@ -1,32 +1,65 @@
 "use client";
 
+import SortingButton from "@/components/button/sorting-button";
 import { Badge } from "@/components/ui/badge";
-import { Transaction, TransactionType } from "@prisma/client";
+import { MONTHS } from "@/lib/date-utils";
+import { Prisma, TransactionType } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { ChevronDown, ChevronUp, TrendingDown, TrendingUp } from "lucide-react";
+import { Calendar, ChevronDown, ChevronUp } from "lucide-react";
 
-export const columns: ColumnDef<Transaction>[] = [
+type TransactionWithLabel = Prisma.TransactionGetPayload<{
+  include: { labels: true };
+}>;
+
+const monthFilterFn = (
+  row: any,
+  columnId: string,
+  filterValue: { month: string; year: number }
+) => {
+  const dateValue = new Date(row.getValue(columnId));
+  const monthName = MONTHS[dateValue.getMonth()];
+  const year = dateValue.getFullYear();
+
+  const monthMatches =
+    !filterValue.month || monthName === filterValue.month.toLowerCase();
+  const yearMatches = !filterValue.year || year === filterValue.year;
+
+  return monthMatches && yearMatches;
+};
+
+export const columns: ColumnDef<TransactionWithLabel>[] = [
   {
     accessorKey: "title",
-    header: "Título",
+    header: ({ column }) => {
+      return <SortingButton column={column} title={"Título"} />;
+    },
     cell: ({ row }) => {
       return <div className="w-96">{row.getValue("title")}</div>;
     },
   },
   {
-    accessorKey: "title",
-    header: "Categoria",
-    // cell: ({ row }) => {
-    //   return (
-    //     <div>
-    //       <Badge>{row.original.}</Badge>
-    //     </div>
-    //   );
-    // },
+    accessorKey: "labels",
+    header: "Categorias",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-wrap gap-2">
+          {row.original.labels.map((label) => (
+            <Badge
+              className="text-muted-foreground border-muted-foreground/5 bg-muted-foreground/5 dark:bg-muted-foreground/10"
+              key={label.id}
+              variant={"outline"}
+            >
+              {label.title}
+            </Badge>
+          ))}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "occurredAt",
     header: "Data",
+    filterFn: monthFilterFn,
     cell: ({ row }) => {
       const formatted = new Date(row.getValue("occurredAt")).toLocaleDateString(
         "pt-BR",
@@ -36,7 +69,12 @@ export const columns: ColumnDef<Transaction>[] = [
           day: "numeric",
         }
       );
-      return <div>{formatted}</div>;
+      return (
+        <div className="flex flex-row items-center gap-2 text-muted-foreground">
+          <Calendar className="w-4 h-4 text-muted-foreground" />
+          {formatted}
+        </div>
+      );
     },
   },
   {
@@ -70,107 +108,3 @@ export const columns: ColumnDef<Transaction>[] = [
     },
   },
 ];
-
-// export const columns: GridColDef<Transaction>[] = [
-//   {
-//     field: "title",
-//     headerName: "Título",
-//     headerClassName: "text-xs text-muted-foreground font-bold",
-//     flex: 1,
-//     editable: true,
-//     disableColumnMenu: true,
-//   },
-//   // {
-//   //   field: "labels",
-//   //   headerName: "Label",
-//   //   maxWidth: 150,
-//   //   flex: 1,
-//   //   renderCell: (params) => {
-//   //     return (
-//   //       <div className="flex items-center h-full">
-//   //         {params.row.labels.map((label) => {
-//   //           return (
-//   //             <Badge key={label.id} variant="outline">
-//   //               {label.title}
-//   //             </Badge>
-//   //           );
-//   //         })}
-//   //       </div>
-//   //     );
-//   //   },
-//   //   // filterFn: (row, id, value) => {
-//   //   //   return value.includes(row.getValue(id));
-//   //   // },
-//   // },
-//   {
-//     field: "occurredAt",
-//     headerName: "Data",
-//     headerClassName: "text-xs text-muted-foreground font-bold",
-//     editable: true,
-//     disableColumnMenu: true,
-//     flex: 1,
-//     renderCell: (params) => {
-//       return (
-//         <div className="flex space-x-2">
-//           <span>
-//             {formatDate(params.value)}
-//           </span>
-//         </div>
-//       );
-//     },
-//   },
-//   {
-//     field: "valueBrl",
-//     headerName: "Valor",
-//     headerAlign: "left",
-//     headerClassName: "text-xs text-muted-foreground font-bold",
-//     editable: true,
-//     type: "number",
-//     disableColumnMenu: true,
-//     flex: 1,
-//     renderCell: (params) => {
-//       return (
-//         <div className="flex space-x-2">
-//           <span>
-//             {params.row.type === TransactionType.EXPENSE && "-"}
-//             {formatCurrency(params.value)}
-//           </span>
-//         </div>
-//       );
-//     },
-//   },
-//   {
-//     field: "label",
-//     headerName: "Categoria",
-//     headerAlign: "left",
-//     headerClassName: "text-xs text-muted-foreground font-bold",
-//     editable: true,
-//     type: "number",
-//     disableColumnMenu: true,
-//     flex: 1,
-//     renderCell: (params) => {
-//       return (
-//         <div className="flex space-x-2">
-//           <span>
-//             {params.row.type === TransactionType.EXPENSE && "-"}
-//             {formatCurrency(params.value)}
-//           </span>
-//         </div>
-//       );
-//     },
-//   },
-//   // {
-//   //   field: "actions",
-//   //   headerName: "",
-//   //   maxWidth: 55,
-//   //   flex: 1,
-//   //   sortable: false,
-//   //   editable: false,
-//   //   filterable: false,
-//   //   resizable: false,
-//   //   disableColumnMenu: true,
-//   //   renderCell: (params) => {
-//   //     return <DataTableRowActions data={params.row} />;
-//   //   },
-//   // },
-// ];
