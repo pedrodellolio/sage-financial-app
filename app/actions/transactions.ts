@@ -1,17 +1,22 @@
 "use server";
 
-import { getWalletByMonthAndYear, updateOrCreateWallet } from "./wallet";
+import {
+  getWalletByMonthAndYear,
+  updateOrCreateWallet,
+  createWallet,
+  updateWallet,
+} from "./wallet";
 import {
   convertStringToDate,
   currencyStringToTransactionValue,
-  isValidDate,
 } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import { ensureAuthenticatedUser } from "./account";
 import { FetchingDataError, ProfileRequiredError } from "@/lib/exceptions";
-import { Label, Prisma, TransactionType } from "@prisma/client";
+import { Label, TransactionType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { format } from "date-fns";
+import { AddOrUpdateTransactionDTO } from "@/dto/types";
 
 export interface MappedTransaction {
   fileId: string;
@@ -43,11 +48,10 @@ export async function getTransactions(
         wallet: {
           profileId: user.selectedProfile.id,
         },
-        labels: {
-          some: {
-            title: { in: labelsTitle },
-          },
-        },
+        OR: [
+          { labels: { none: {} } },
+          { labels: { some: { title: { in: labelsTitle } } } },
+        ],
         occurredAt: { lte: endDate, gte: startDate },
       },
     });
@@ -96,23 +100,17 @@ export async function deleteTransaction(id?: string) {
   revalidatePath("/app/(protected)/transactions", "page");
 }
 
-export async function createTransaction(transaction: AddTransactionDTO) {
+export async function createTransaction(
+  transaction: AddOrUpdateTransactionDTO
+) {
   const user = await ensureAuthenticatedUser();
   if (!user.selectedProfile) throw new ProfileRequiredError();
 
   try {
     const month = transaction.occurredAt.getMonth();
     const year = transaction.occurredAt.getFullYear();
-    const currWallet = await getWalletByMonthAndYear(
-      user.selectedProfile.id,
-      month,
-      year
-    );
-    const wallet = await updateOrCreateWallet(
-      user.selectedProfile.id,
-      transaction,
-      currWallet
-    );
+    const currWallet = await getWalletByMonthAndYear(month, year);
+    const wallet = await updateOrCreateWallet(transaction, currWallet);
 
     await prisma.transaction.create({
       data: {
@@ -132,28 +130,39 @@ export async function createTransaction(transaction: AddTransactionDTO) {
 }
 
 export async function createTransactions(
-  profileId: string,
-  transactions: MappedTransaction[]
+  transactions: AddOrUpdateTransactionDTO[]
 ) {
-  // const month = transaction.occurredAt.getMonth();
-  // const year = transaction.occurredAt.getFullYear();
-  // const currWallet = await getWalletByMonthAndYear(profileId, month, year);
+  const user = await ensureAuthenticatedUser();
+  if (!user.selectedProfile) throw new ProfileRequiredError();
 
-  // const wallet = await updateOrCreateWallet(profileId, transaction, currWallet);
+  try {
+    //ERRADO POIS ESTÁ FAZENDO EM PARALELO, SEMPRE CRIANDO UMA WALLET
+    await Promise.all(
+      transactions.map(async (t) => {
+        const month = new Date(t.occurredAt).getMonth();
+        const year = new Date(t.occurredAt).getFullYear();
+        let currWallet = await getWalletByMonthAndYear(month, year);
 
-  await prisma.transaction.createMany({
-    data: transactions.map((t) => {
-      const { valueBrl, type } = currencyStringToTransactionValue(t.valueBrl);
-      return {
-        walletId: "clw9pigra000fgurc5orawod3",
-        title: t.title ?? `Movimentação de ${t.occurredAt}`,
-        occurredAt: isValidDate(t.occurredAt)
-          ? convertStringToDate(t.occurredAt)
-          : new Date(),
-        valueBrl: valueBrl,
-        type: type,
-        fileId: t.fileId,
-      };
-    }),
-  });
+        if (!currWallet) {
+          currWallet = await createWallet(month, year);
+        }
+
+        console.log(t.occurredAt);
+        await updateWallet(currWallet.id, t.valueBrl, t.type);
+        await prisma.transaction.create({
+          data: {
+            walletId: currWallet.id,
+            title: t.title ?? `Movimentação de ${t.occurredAt}`,
+            occurredAt: t.occurredAt,
+            valueBrl: t.valueBrl,
+            type: t.type,
+            fileId: t.fileId,
+          },
+        });
+      })
+    );
+  } catch (err) {
+    console.error(err);
+    throw new FetchingDataError();
+  }
 }

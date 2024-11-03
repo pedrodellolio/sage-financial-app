@@ -1,5 +1,7 @@
 "use server";
 import { prisma } from "@/lib/prisma";
+import { ensureAuthenticatedUser } from "./account";
+import { ProfileRequiredError } from "@/lib/exceptions";
 
 export interface AddFileDTO {
   name: string;
@@ -11,10 +13,13 @@ export async function getFiles(profileId?: string) {
   });
 }
 
-export async function createFiles(profileId: string, files: AddFileDTO[]) {
+export async function createFiles(files: AddFileDTO[]) {
+  const user = await ensureAuthenticatedUser();
+  if (!user.selectedProfile) throw new ProfileRequiredError();
+
   return await prisma.file.createManyAndReturn({
     data: files.map((f) => {
-      return { profileId, name: f.name };
+      return { profileId: user.selectedProfile.id, name: f.name };
     }),
   });
 }

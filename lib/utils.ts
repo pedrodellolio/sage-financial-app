@@ -1,6 +1,8 @@
-import { TransactionType } from "@prisma/client";
+import { MappedTransaction, UploadedFile } from "@/dto/types";
+import { Transaction, TransactionType, Prisma } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
-import { getMonth, getYear } from "date-fns";
+import { getMonth, getYear, isValid, parse } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 import { twMerge } from "tailwind-merge";
 
@@ -44,6 +46,13 @@ export function formatToBRLCurrency(value: string): string {
 
 export function currencyStringToTransactionValue(currencyString: string) {
   let error: string | undefined = undefined;
+
+  if (isNumber(currencyString)) {
+    const value = parseFloat(currencyString);
+    const type = value < 0 ? TransactionType.EXPENSE : TransactionType.INCOME;
+    return { valueBrl: Math.abs(value), type: type, error };
+  }
+
   const cleanedString = currencyString.replace(/R\$/g, "").replace(/\s/g, "");
   const normalizedString = cleanedString.replace(",", ".");
   const numberValue = parseFloat(normalizedString);
@@ -59,16 +68,24 @@ export function currencyStringToTransactionValue(currencyString: string) {
   return { valueBrl: Math.abs(numberValue), type: type, error };
 }
 
-export function convertStringToDate(dateString: string): Date {
-  console.log(dateString);
-  const [day, month, year] = dateString.split("/").map(Number);
-  console.log(new Date(year, month - 1, day));
-  return new Date(year, month - 1, day);
+export function convertStringToDate(dateString: string): Date | null {
+  const parsedDate = parse(dateString, "dd/MM/yyyy", new Date(), {
+    locale: ptBR,
+  });
+
+  if (isNaN(parsedDate.getTime())) {
+    console.error("Invalid date");
+    return null;
+  }
+
+  return parsedDate;
 }
 
-export function isValidDate(dateString: string): boolean {
-  const date = convertStringToDate(dateString);
-  return !isNaN(date.getTime());
+export function isValidDateString(dateString: string): boolean {
+  const parsedDate = parse(dateString, "dd/MM/yyyy", new Date(), {
+    locale: ptBR,
+  });
+  return isValid(parsedDate);
 }
 
 export function getDefaultRangeDashboard(): DateRange {
@@ -84,35 +101,6 @@ export function formatBytes(bytes: number) {
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
 }
-
-// export function fileDataToTransactions(
-//   fileId: string,
-//   file: UploadedFile
-// ): any[] {
-//   let transactions: any[] = [];
-//   file.data.map((item) => {
-//     const mapped: Partial<MappedTransaction> = {};
-//     file.mapping.forEach((map) => {
-//       mapped[map.key] = item[map.value];
-//     });
-
-//     const { valueBrl, type, error } = currencyStringToTransactionValue(
-//       mapped.valueBrl ?? "R$0,00"
-//     );
-//     transactions.push({
-//       title: mapped.title ?? `Movimentação de ${mapped.occurredAt}`,
-//       occurredAt:
-//         mapped.occurredAt && isValidDate(mapped.occurredAt)
-//           ? convertStringToDate(mapped.occurredAt)
-//           : new Date(),
-//       valueBrl: valueBrl,
-//       type: type,
-//       fileId,
-//     });
-//   });
-
-//   return transactions;
-// }
 
 export function getCurrentPeriod(): [number, number] {
   const currentDate = new Date();

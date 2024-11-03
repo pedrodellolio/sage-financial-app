@@ -17,26 +17,31 @@ import {
   DrawerFooter,
   DrawerHeader,
 } from "@/components/ui/drawer";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Dropzone, { useDropzone } from "react-dropzone";
 import { ChevronRight, FileUp } from "lucide-react";
 import { useCallback, useState } from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { usePapaParse } from "react-papaparse";
 import { CollapsibleFileCard } from "../collapsable-file-card";
-import { createFiles } from "@/app/actions/files";
-import { useSession } from "next-auth/react";
-import { createTransactions } from "@/app/actions/transactions";
 import { useImportTransactions } from "@/hooks/use-import-transactions";
+import {
+  AddOrUpdateTransactionDTO,
+  MappedTransaction,
+  UploadedFile,
+} from "@/dto/types";
+import { AddFileDTO, createFiles } from "@/app/actions/files";
+import {
+  convertStringToDate,
+  currencyStringToTransactionValue,
+} from "@/lib/utils";
+import { createTransactions } from "@/app/actions/transactions";
 
 export default function ImportFilesDialog() {
-  const { data: session } = useSession();
-  const profileId = session?.user.selectedProfile?.id;
-
+  const { isOpen, setIsOpen } = useImportTransactions();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const { readString } = usePapaParse();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
+
+  const [files, setFiles] = useState<UploadedFile[]>([]);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const readFile = (file: File): Promise<string> => {
@@ -54,7 +59,7 @@ export default function ImportFilesDialog() {
     for (const file of acceptedFiles) {
       try {
         const content = await readFile(file);
-        // parseCSVString(content, file);
+        parseCSVString(content, file);
       } catch (error) {
         console.error("Error reading file:", error);
       }
@@ -68,57 +73,89 @@ export default function ImportFilesDialog() {
     },
   });
 
-  // const [files, setFiles] = useState<UploadedFile[]>([]);
-  const [files, setFiles] = useState([]);
+  const parseCSVString = (csv: string, file: File) => {
+    readString(csv, {
+      worker: true,
+      dynamicTyping: true,
+      header: true,
+      complete: ({ data, meta }) => {
+        setFiles((prevState) => {
+          return [
+            ...prevState,
+            {
+              name: file.name,
+              size: file.size,
+              data,
+              fields: meta.fields ?? [],
+              mapping: [],
+              errors: [],
+            },
+          ];
+        });
+      },
+    });
+  };
 
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-  const { isOpen, setIsOpen } = useImportTransactions();
-
-  // const parseCSVString = (csv: string, file: File) => {
-  //   readString(csv, {
-  //     worker: true,
-  //     dynamicTyping: true,
-  //     header: true,
-  //     complete: ({ data, meta }) => {
-  //       setFiles((prevState) => {
-  //         return [
-  //           ...prevState,
-  //           {
-  //             name: file.name,
-  //             size: file.size,
-  //             data,
-  //             fields: meta.fields ?? [],
-  //             mapping: [],
-  //             errors: [],
-  //           },
-  //         ];
-  //       });
-  //     },
-  //   });
-  // };
+  console.log(files);
 
   // const handleRemoveFile = (index: number) => {
   //   setFiles((prevFiles) => prevFiles?.filter((_, i) => i !== index));
   // };
 
-  // const handleUploadFiles = async () => {
-  //   try {
-  //     if (profileId) {
-  //       const filesArray = files.map((f) => {
-  //         return { profileId: profileId, name: f.name };
-  //       });
-  //       const filesDb = await createFiles(profileId, filesArray);
+  const fileDataToTransactions = (fileId: string, file: UploadedFile) => {
+    let transactions: AddOrUpdateTransactionDTO[] = [];
 
-  //       const filesData = files.map((file, i) => {
-  //         const fileId = filesDb.find((_, dbIndex) => dbIndex === i)?.id;
-  //         return fileDataToTransactions(fileId!, file);
-  //       });
-  //       for (const transactions of filesData) {
-  //         await createTransactions(profileId, transactions);
-  //       }
-  //     }
-  //   } catch (err) {}
-  // };
+    file.data.map((item) => {
+      const mapped: Partial<MappedTransaction> = {};
+      file.mapping.forEach((map) => {
+        mapped[map.key] = item[map.value];
+      });
+
+      const { valueBrl, type } = currencyStringToTransactionValue(
+        mapped.valueBrl ?? "R$0,00"
+      );
+
+      let occurredAt = new Date();
+      const parsedDate =
+        mapped.occurredAt && convertStringToDate(mapped.occurredAt);
+      if (mapped.occurredAt && parsedDate) occurredAt = parsedDate;
+
+      transactions.push({
+        title: mapped.title ?? `Movimentação de ${mapped.occurredAt}`,
+        valueBrl: valueBrl,
+        type: type,
+        occurredAt,
+        fileId,
+        labels: [],
+      });
+    });
+
+    return transactions;
+  };
+
+  const handleUploadFiles = async () => {
+    try {
+      const filesName: AddFileDTO[] = files.map((f) => {
+        return {
+          name: f.name,
+        };
+      });
+      const filesDb = await createFiles(filesName);
+
+      const fileDataArray = files.map((file, i) => {
+        const fileId = filesDb.find((_, dbIndex) => dbIndex === i)?.id;
+        if (!fileId)
+          throw new Error(`File ID not found for file: ${file.name}`);
+        return fileDataToTransactions(fileId, file);
+      });
+
+      for (const fileTransactions of fileDataArray) {
+        await createTransactions(fileTransactions);
+      }
+    } catch (err) {
+      console.error("Error during file upload process:", err);
+    }
+  };
 
   if (isDesktop) {
     return (
@@ -165,7 +202,7 @@ export default function ImportFilesDialog() {
                               handleMappingChange={(value) =>
                                 setFiles((prevState) => {
                                   const array = [...prevState];
-                                  // array[i].mapping = value;
+                                  array[i].mapping = value;
                                   return array;
                                 })
                               }
@@ -190,7 +227,7 @@ export default function ImportFilesDialog() {
               type="button"
               disabled={files.length === 0}
               size={"sm"}
-              // onClick={() => handleUploadFiles()}
+              onClick={() => handleUploadFiles()}
             >
               Importar arquivos
               <ChevronRight className="w-4 h-4 ml-2" />

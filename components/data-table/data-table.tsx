@@ -71,7 +71,7 @@ export function DataTable<TData, TValue>({
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(15);
   const [creating, setCreating] = useState(false);
-
+  console.log(data);
   const table = useReactTable({
     data,
     columns,

@@ -27,7 +27,6 @@ export default async function Transactions({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  // const isImportFilesDialogOpen = !!searchParams["i"];
   const [currMonth, currYear] = getCurrentPeriod();
   const filteredYear =
     parseNumber(searchParams["year"]?.toString()) ?? currYear;

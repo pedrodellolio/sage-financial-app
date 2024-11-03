@@ -1,4 +1,4 @@
-import { BudgetGoalType } from "@prisma/client";
+import { BudgetGoalType, Label, TransactionType } from "@prisma/client";
 
 export interface AddLabelDTO {
   title: string;
@@ -65,25 +65,34 @@ export interface AddLabelDTO {
 
 // export enum ChartType {}
 
-// export interface UploadedFile {
-//   name: string;
-//   size: number;
-//   data: any[];
-//   fields: string[];
-//   mapping: Mapping[];
-//   errors: string[];
-// }
+export interface AddOrUpdateTransactionDTO {
+  fileId?: string;
+  title: string;
+  occurredAt: Date;
+  valueBrl: number;
+  type: TransactionType;
+  labels: Label[];
+}
 
-// export interface MappedTransaction {
-//   fileId: string;
-//   title: string;
-//   valueBrl: string;
-//   occurredAt: string;
-// }
-// export interface Mapping {
-//   key: keyof MappedTransaction;
-//   value: string;
-// }
+export interface UploadedFile {
+  name: string;
+  size: number;
+  data: any[];
+  fields: string[];
+  mapping: Mapping[];
+  errors: string[];
+}
+
+export interface MappedTransaction {
+  fileId: string;
+  title: string;
+  valueBrl: string;
+  occurredAt: string;
+}
+export interface Mapping {
+  key: keyof MappedTransaction;
+  value: string;
+}
 
 // export interface File {
 //   id: string;

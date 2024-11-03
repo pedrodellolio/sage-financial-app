@@ -24,12 +24,12 @@ import {
 } from "@/schemas/file-mapping-schema";
 import { useForm } from "react-hook-form";
 import { Form, FormField } from "./ui/form";
+import { Mapping, UploadedFile } from "@/dto/types";
+import { columnsAlias } from "./transactions/data-table/columns";
 
 interface Props {
-  // file: UploadedFile;
-  file: any;
-  // handleMappingChange: (value: Mapping[]) => void;
-  handleMappingChange: (value: any[]) => void;
+  file: UploadedFile;
+  handleMappingChange: (value: Mapping[]) => void;
 }
 
 export function CollapsibleFileCard({ file, handleMappingChange }: Props) {
@@ -38,12 +38,12 @@ export function CollapsibleFileCard({ file, handleMappingChange }: Props) {
   const form = useForm<FileMappingFormData>({
     resolver: zodResolver(fileMappingSchema),
     defaultValues: {
-      // mapping: columnsAlias.map((c) => {
-      //   return {
-      //     key: c as "title" | "occurredAt" | "valueBrl",
-      //     value: "",
-      //   };
-      // }),
+      mapping: columnsAlias.map((c) => {
+        return {
+          key: c as "title" | "occurredAt" | "valueBrl",
+          value: "",
+        };
+      }),
     },
   });
 
@@ -93,7 +93,7 @@ export function CollapsibleFileCard({ file, handleMappingChange }: Props) {
                 Coluna no seu arquivo
               </p>
             </div>
-            {/* <Form {...form}>
+            <Form {...form}>
               {columnsAlias.map((_, i) => (
                 <div key={i} className="flex flex-row items-center gap-6 mt-2">
                   <FormField
@@ -124,7 +124,7 @@ export function CollapsibleFileCard({ file, handleMappingChange }: Props) {
                   />
                 </div>
               ))}
-            </Form> */}
+            </Form>
           </CollapsibleContent>
         </CardContent>
       </Card>

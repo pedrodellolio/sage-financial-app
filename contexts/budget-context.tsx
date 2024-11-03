@@ -1,9 +1,8 @@
 "use client";
 
 import { getBudgetByPeriod } from "@/app/actions/budget";
-import { BudgetGoal } from "@/dto/types";
 import { getCurrentPeriod } from "@/lib/utils";
-import { Budget } from "@prisma/client";
+import { Budget, BudgetGoal } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import {
   Dispatch,
@@ -30,7 +29,7 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
   const [period, setPeriod] = useState<[number, number]>(getCurrentPeriod());
   const [budget, setBudget] = useState<Budget | null>(null);
   const [goals, setGoals] = useState<BudgetGoal[]>([]);
-  // console.log(goals);
+
   useEffect(() => {
     const [month, year] = period;
     profileId &&

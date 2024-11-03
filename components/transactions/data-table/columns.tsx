@@ -27,6 +27,8 @@ const monthFilterFn = (
   return monthMatches && yearMatches;
 };
 
+export const columnsAlias = ["title", "labels", "occurredAt", "valueBrl"];
+
 export const columns: ColumnDef<TransactionWithLabel>[] = [
   {
     accessorKey: "title",
